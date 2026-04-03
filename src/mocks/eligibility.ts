@@ -2,12 +2,21 @@
  * Mock response for /v2/Member/Eligibility
  * Member: Henry Tom Garcia (AH0000007)
  * Shape based on the sample JSON in the data requirements sheet.
+ *
+ * API: /v2/Member/Eligibility
+ * Fields sourced from this API per requirements CSV:
+ *   - Middle name, Plan_Type (additionalIdentifiers)
  */
 
 export interface EligibilityRecord {
   level: number
   code: string
   desc: string
+}
+
+export interface EligibilityAdditionalIdentifier {
+  identifierName: string
+  identifierValue: string
 }
 
 export interface EligibilityEntry {
@@ -18,10 +27,13 @@ export interface EligibilityEntry {
   endDate: string
   status: string
   eligibilityPath: string
+  planType: string
+  additionalIdentifiers: EligibilityAdditionalIdentifier[]
 }
 
 export interface MemberEligibility {
   memberFirstName: string
+  memberMiddleName: string
   memberLastName: string
   gender: string
   memberDOB: string
@@ -32,6 +44,7 @@ export interface MemberEligibility {
 
 export const mockEligibility: MemberEligibility = {
   memberFirstName: 'Henry',
+  memberMiddleName: 'Tom',
   memberLastName: 'Garcia',
   gender: 'M',
   memberDOB: '2001-01-01T00:00:00.000Z',
@@ -50,6 +63,11 @@ export const mockEligibility: MemberEligibility = {
       endDate: '2024-12-31',
       status: 'Active',
       eligibilityPath: 'Ambetter Health (AMB) >> California (CA) >> Ambetter Enhanced Care Silver (SLV)',
+      planType: 'Commercial',
+      additionalIdentifiers: [
+        { identifierName: 'Plan_Type', identifierValue: 'Commercial' },
+        { identifierName: 'SUBSCRIBER_NO', identifierValue: 'SUB-987654' },
+      ],
     },
     {
       lobBenID: 2,
@@ -63,6 +81,11 @@ export const mockEligibility: MemberEligibility = {
       endDate: '2024-12-31',
       status: 'Active',
       eligibilityPath: 'Medicaid (MCD) >> Virginia (VA) >> Virginia Medicaid Managed Care (MA00)',
+      planType: 'Medicaid',
+      additionalIdentifiers: [
+        { identifierName: 'Plan_Type', identifierValue: 'Medicaid' },
+        { identifierName: 'MEDICAID_NO', identifierValue: 'MCD-20191-HG001' },
+      ],
     },
   ],
 }

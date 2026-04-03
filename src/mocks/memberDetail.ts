@@ -60,6 +60,12 @@ export interface MemberDetail {
   status: string
   enrollment: string
 
+  // Medical IDs  (/v2/Member/Detail)
+  primaryInsurance: string
+  primaryPolicyNumber: string
+  secondaryInsurance: string
+  secondaryPolicyNumber: string
+
   // Languages
   primaryLanguage: string
   preferredWrittenLanguages: string[]
@@ -83,7 +89,7 @@ export interface MemberDetail {
   // Family
   familyMembers: FamilyMember[]
 
-  // Identifiers
+  // Identifiers  (additionalIdentifiers array from /v2/Member/Detail)
   additionalIdentifiers: AdditionalIdentifier[]
 }
 
@@ -105,6 +111,11 @@ export const mockMemberDetail: MemberDetail = {
   assignedCareManager: 'Prudhvi Rajan',
   status: 'Active',
   enrollment: 'Enrolled',
+
+  primaryInsurance: 'Ambetter Health',
+  primaryPolicyNumber: 'AMB-CA-2024-HG',
+  secondaryInsurance: 'Virginia Medicaid Managed Care',
+  secondaryPolicyNumber: 'MCD-20191-HG001',
 
   primaryLanguage: 'English',
   preferredWrittenLanguages: ['Spanish'],
@@ -197,15 +208,19 @@ export const mockMemberDetail: MemberDetail = {
   ],
 
   additionalIdentifiers: [
-    { identifierName: 'SUBSCRIBER_NO', identifierValue: 'SUB-987654' },
-    { identifierName: 'MEDICAID_NO', identifierValue: 'MCD-20191-HG001' },
-    { identifierName: 'MEDICARE_NO', identifierValue: 'MCR-HG-2024-001' },
-    { identifierName: 'FAMILY_LINK_ID', identifierValue: 'FAM-001' },
-    { identifierName: 'MemberID', identifierValue: 'AH0000007' },
-    { identifierName: 'Plan_Type', identifierValue: 'Medicaid' },
-    { identifierName: 'MRN', identifierValue: 'MRN-789456' },
-    { identifierName: 'CARRIER_MEMBER_ID', identifierValue: 'AMB-CA-2024-HG' },
-    { identifierName: 'MBR #', identifierValue: '1EG4-TE5-MK72' },
-    { identifierName: 'MCO Assigned Member ID', identifierValue: 'MCO-HG-0007' },
+    { identifierName: 'SUBSCRIBER_NO',           identifierValue: 'SUB-987654' },
+    { identifierName: 'MEDICAID_NO',             identifierValue: 'MCD-20191-HG001' },
+    { identifierName: 'MEDICARE_NO',             identifierValue: 'MCR-HG-2024-001' },
+    { identifierName: 'Medicaid Subscriber ID',  identifierValue: 'MCD-SUB-HG-0007' },
+    { identifierName: 'FAMILY_LINK_ID',          identifierValue: 'FAM-001' },
+    { identifierName: 'VSP_ASPFN_ID',            identifierValue: 'VSP-HG-00789' },
+    { identifierName: 'MEMBER_NAME',             identifierValue: 'Henry Tom Garcia' },
+    { identifierName: 'TFN',                     identifierValue: '800-555-0147' },
+    { identifierName: 'MRN',                     identifierValue: 'MRN-789456' },
+    { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-HG-2024-0007' },
+    { identifierName: 'MemberID',                identifierValue: 'AH0000007' },
+    { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'AMB-CA-2024-HG' },
+    { identifierName: 'MBR #',                   identifierValue: '1EG4-TE5-MK72' },
+    { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-HG-0007' },
   ],
 }

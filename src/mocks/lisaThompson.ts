@@ -32,6 +32,11 @@ export const lisaMemberDetail: MemberDetail = {
   status: 'Active',
   enrollment: 'Enrolled',
 
+  primaryInsurance: 'UnitedHealthcare Medicare Advantage',
+  primaryPolicyNumber: 'UHC-VA-2024-LT',
+  secondaryInsurance: 'Virginia Medicaid — Dual Special Needs Plan',
+  secondaryPolicyNumber: 'MCD-22301-LT023',
+
   primaryLanguage: 'English',
   preferredWrittenLanguages: ['English'],
   preferredSpokenLanguages: ['English'],
@@ -91,19 +96,26 @@ export const lisaMemberDetail: MemberDetail = {
   ],
 
   additionalIdentifiers: [
-    { identifierName: 'SUBSCRIBER_NO', identifierValue: 'SUB-114422' },
-    { identifierName: 'MEDICAID_NO', identifierValue: 'MCD-22301-LT023' },
-    { identifierName: 'MEDICARE_NO', identifierValue: 'MCR-LT-2024-023' },
-    { identifierName: 'MemberID', identifierValue: 'AH0000023' },
-    { identifierName: 'Plan_Type', identifierValue: 'Medicare Advantage' },
-    { identifierName: 'MRN', identifierValue: 'MRN-441287' },
-    { identifierName: 'CARRIER_MEMBER_ID', identifierValue: 'UHC-VA-2024-LT' },
-    { identifierName: 'MBR #', identifierValue: '2HT5-RK9-LT23' },
+    { identifierName: 'SUBSCRIBER_NO',           identifierValue: 'SUB-114422' },
+    { identifierName: 'MEDICAID_NO',             identifierValue: 'MCD-22301-LT023' },
+    { identifierName: 'MEDICARE_NO',             identifierValue: 'MCR-LT-2024-023' },
+    { identifierName: 'Medicaid Subscriber ID',  identifierValue: 'MCD-SUB-LT-0023' },
+    { identifierName: 'FAMILY_LINK_ID',          identifierValue: 'FAM-023' },
+    { identifierName: 'VSP_ASPFN_ID',            identifierValue: 'VSP-LT-00441' },
+    { identifierName: 'MEMBER_NAME',             identifierValue: 'Lisa Anne Thompson' },
+    { identifierName: 'TFN',                     identifierValue: '800-555-0223' },
+    { identifierName: 'MRN',                     identifierValue: 'MRN-441287' },
+    { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-LT-2024-0023' },
+    { identifierName: 'MemberID',                identifierValue: 'AH0000023' },
+    { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'UHC-VA-2024-LT' },
+    { identifierName: 'MBR #',                   identifierValue: '2HT5-RK9-LT23' },
+    { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-LT-0023' },
   ],
 }
 
 export const lisaEligibility: MemberEligibility = {
   memberFirstName: 'Lisa',
+  memberMiddleName: 'Anne',
   memberLastName: 'Thompson',
   gender: 'F',
   memberDOB: '1966-03-15T00:00:00.000Z',
@@ -122,6 +134,11 @@ export const lisaEligibility: MemberEligibility = {
       endDate: '2024-12-31',
       status: 'Active',
       eligibilityPath: 'UnitedHealthcare (UHC) >> Virginia (VA) >> Medicare Advantage Gold (GLD)',
+      planType: 'Medicare Advantage',
+      additionalIdentifiers: [
+        { identifierName: 'Plan_Type', identifierValue: 'Medicare Advantage' },
+        { identifierName: 'SUBSCRIBER_NO', identifierValue: 'SUB-114422' },
+      ],
     },
     {
       lobBenID: 2,
@@ -135,6 +152,11 @@ export const lisaEligibility: MemberEligibility = {
       endDate: '2024-12-31',
       status: 'Active',
       eligibilityPath: 'Medicaid (MCD) >> Virginia (VA) >> Dual Special Needs Plan (DSNP)',
+      planType: 'Medicaid DSNP',
+      additionalIdentifiers: [
+        { identifierName: 'Plan_Type', identifierValue: 'Medicaid DSNP' },
+        { identifierName: 'MEDICAID_NO', identifierValue: 'MCD-22301-LT023' },
+      ],
     },
   ],
 }

@@ -21,7 +21,7 @@ export { mockMemberDetail } from './memberDetail'
 export type { MemberDetail, Phone, Address, AdditionalIdentifier, FamilyMember } from './memberDetail'
 
 export { mockEligibility } from './eligibility'
-export type { MemberEligibility, EligibilityEntry, EligibilityRecord } from './eligibility'
+export type { MemberEligibility, EligibilityEntry, EligibilityRecord, EligibilityAdditionalIdentifier } from './eligibility'
 
 export { mockActivitySummary, mockAssessmentSubmissions } from './assessments'
 export type { ScriptSummary, AssessmentSubmission, AssessmentQuestion } from './assessments'
