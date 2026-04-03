@@ -4855,7 +4855,7 @@ function openScriptResponseModal() {
     if (!noteText) return;
     var row = '<tr>' +
       '<td><input type="checkbox" /></td>' +
-      '<td>' + noteType + '</td>' +
+      '<td>' + noteType + ' <span style="display:inline-block;font-size:10px;font-weight:700;color:var(--teal);background:var(--teal-light,rgba(49,94,123,0.1));border:1px solid var(--teal);border-radius:3px;padding:1px 5px;vertical-align:middle;letter-spacing:0.02em;">AI Note</span></td>' +
       '<td>' + noteText.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</td>' +
       '<td><span class="material-icons" style="font-size:14px;color:var(--teal);cursor:pointer;">visibility</span></td>' +
       '<td>N/A</td><td>N/A</td>' +
