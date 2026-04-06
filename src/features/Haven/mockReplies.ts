@@ -27,6 +27,42 @@ import {
   lisaActivitySummary,
 } from '@/mocks/lisaThompson'
 
+import {
+  robertMemberDetail,
+  robertEligibility,
+  robertMedications,
+  robertDiagnosis,
+  robertCarePlan,
+  robertPrograms,
+  robertGapsInCare,
+  robertVisits,
+  robertActivitySummary,
+} from '@/mocks/robertChen'
+
+import {
+  sarahMemberDetail,
+  sarahEligibility,
+  sarahMedications,
+  sarahDiagnosis,
+  sarahCarePlan,
+  sarahPrograms,
+  sarahGapsInCare,
+  sarahVisits,
+  sarahActivitySummary,
+} from '@/mocks/sarahWilliams'
+
+import {
+  jamesMemberDetail,
+  jamesEligibility,
+  jamesMedications,
+  jamesDiagnosis,
+  jamesCarePlan,
+  jamesPrograms,
+  jamesGapsInCare,
+  jamesVisits,
+  jamesActivitySummary,
+} from '@/mocks/jamesOConnor'
+
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 
 function fmtDate(iso: string): string {
@@ -1022,6 +1058,513 @@ function getLisaReply(q: string, first: string): string {
   return getGeneralFallback(q, first, true)
 }
 
+/* ─── Robert Chen reply functions (AH0000031) ───────────────────────────────── */
+
+function getRobertMedReply(first: string): string {
+  const active = robertMedications.filter(m => m.isCurrent)
+  const lastRecon = active[0]?.lastReconDate ? fmtDate(active[0].lastReconDate) : 'N/A'
+  const activeLines = active.map(m =>
+    `• ${m.medicationName} ${m.dosage} — ${m.route} ${m.frequency} (${m.diagnosis})`
+  ).join('\n')
+  return `${first}'s medications as of ${lastRecon}:\n\nActive (${active.length}):\n${activeLines}\n\nLast pharmacy reconciliation ${lastRecon}. Please confirm with dispensing pharmacy prior to any clinical decisions.`
+}
+
+function getRobertAllergyReply(first: string): string {
+  return `No drug allergies are currently documented for ${first}.\n\nLast allergy review: 02/20/2024 (at PCP visit with Dr. Kim). Recommend confirming allergy status at next clinical contact.`
+}
+
+function getRobertDxReply(first: string): string {
+  const lines = robertDiagnosis.map(d =>
+    `• ${d.condition} (${d.diagnosisCode}) — onset ${fmtDate(d.startDate)} · ${d.category} · ${d.level}`
+  ).join('\n')
+  const lastVisit = fmtDate(robertVisits[0]?.serviceFrom ?? '')
+  return `${first}'s active problem list (${robertDiagnosis.length} conditions):\n\n${lines}\n\nLast updated at visit on ${lastVisit}.`
+}
+
+function getRobertVitalReply(first: string): string {
+  return `${first}'s most recent vitals (02/20/2024):\n\n• Blood Pressure: 125/78 mmHg — at goal ✓\n• Heart Rate: 72 bpm\n• Respiratory Rate: 14 breaths/min\n• Temperature: 98.6°F\n• O₂ Saturation: 96% on room air\n• Weight: 218 lbs | Height: 5'10" | BMI: 31.3 — obese range\n\nBlood pressure well-controlled on Amlodipine 5mg per member home log. BMI above goal — weight management is an active care plan target.`
+}
+
+function getRobertLabReply(first: string): string {
+  return `${first}'s most recent lab results (01/15/2024):\n\n• HbA1c: 7.2% — above goal (target <7.0%) — trending improvement\n• Fasting Glucose: 134 mg/dL — mildly elevated\n• LDL Cholesterol: 88 mg/dL — at goal on Atorvastatin ✓\n• HDL Cholesterol: 46 mg/dL\n• Triglycerides: 142 mg/dL\n• eGFR: 89 mL/min/1.73m² — normal range\n• Creatinine: 0.9 mg/dL\n\nA1C improved from 7.6% (Sep 2023) to 7.2% — trending in the right direction. Continue to support dietary changes and medication adherence.`
+}
+
+function getRobertCareGapReply(first: string): string {
+  const open = robertGapsInCare.filter(g => g.opportunityStatus === 'Open')
+  const closed = robertGapsInCare.filter(g => g.opportunityStatus === 'Closed')
+  const openLines = open.map(g =>
+    `• ${g.opportunity} (${g.measureCode}) — ${g.ncqaGrouping}\n  ${g.measureDescription}`
+  ).join('\n')
+  const closedLines = closed.map(g => `• ${g.opportunity} (${g.measureCode}) — Fulfilled`).join('\n')
+  return `${first} has ${open.length} open care gap${open.length !== 1 ? 's' : ''} for 2024:\n\n${openLines}\n\nClosed / Fulfilled (${closed.length}):\n${closedLines}\n\nClosing open gaps supports HEDIS compliance and improves the member's star rating.`
+}
+
+function getRobertVisitReply(first: string): string {
+  const lines = robertVisits.map(v =>
+    `• ${fmtDate(v.serviceFrom)} — ${v.visitType}\n  Provider: ${v.providerName}\n  Reason: ${v.reasonForVisit}`
+  ).join('\n')
+  const erVisits = robertVisits.filter(v => v.visitType.toLowerCase().includes('emergency') || v.visitType.toLowerCase().includes('er'))
+  const inpatient = robertVisits.filter(v => v.visitType.toLowerCase().includes('inpatient'))
+  return `${first}'s visit history (${robertVisits.length} encounters):\n\n${lines}\n\nER visits: ${erVisits.length} | Inpatient stays: ${inpatient.length}`
+}
+
+function getRobertCarePlanReply(first: string): string {
+  const active = robertCarePlan.filter(c => c.status !== 'Closed')
+  const goalLines = active.map(c =>
+    `• [${c.status}] ${c.goal}\n  Category: ${c.category} · Target: ${fmtDate(c.targetDate)}`
+  ).join('\n')
+  const interventionLines = active.map(c => `• ${c.intervention}`).join('\n')
+  const allBarriers = active.flatMap(c => c.barriers).filter(b => b.status === 'Active')
+  const barrierLines = allBarriers.length
+    ? allBarriers.map(b => `• ${b.barrier} (${b.type})`).join('\n')
+    : '• None documented'
+  return `${first}'s active care plan (${active.length} goals):\n\nGoals:\n${goalLines}\n\nInterventions:\n${interventionLines}\n\nActive barriers:\n${barrierLines}`
+}
+
+function getRobertProgramReply(first: string): string {
+  const active = robertPrograms.filter(p => p.status === 'Active')
+  const eligible = robertPrograms.filter(p => p.status.startsWith('Eligible'))
+  const activeLines = active.map(p =>
+    `✓ ${p.program}\n  Enrolled: ${fmtDate(p.startDate)} · ${p.statusDescription}`
+  ).join('\n')
+  const eligibleLines = eligible.map(p => `• ${p.program}\n  ${p.statusDescription}`).join('\n')
+  return `${first}'s program enrollment:\n\nActive (${active.length}):\n${activeLines}\n\nEligible – Not Enrolled (${eligible.length}):\n${eligibleLines}\n\nWould you like to initiate an enrollment referral for any of these?`
+}
+
+function getRobertAssessmentReply(first: string): string {
+  const lines = robertActivitySummary.map(a =>
+    `• ${a.assessmentName}\n  Status: ${a.assessmentStatus} · Completed: ${fmtDate(a.assessmentCompletedDateTime)}\n  Score: ${a.assessmentScore} · Outcome: ${a.activityOutcome} · Via: ${a.contactType}`
+  ).join('\n')
+  return `${first}'s assessment history (${robertActivitySummary.length} completed):\n\n${lines}`
+}
+
+function getRobertSdohReply(first: string): string {
+  return `${first}'s social determinants of health screening (01/15/2024):\n\n• Housing: Stable — homeowner in San Francisco\n• Food security: Adequate — no food insecurity identified\n• Transportation: Personal vehicle available\n• Employment: Full-time (tech industry) — demanding schedule is a barrier to consistent eating habits\n• Social support: Strong — married with family support\n\nSDOH score: 1/10 (minimal risk). Primary concern: sedentary work schedule limiting physical activity and consistent meal planning.\n\nRecommend discussing lunch-break exercise strategies and meal prep routines at next check-in.`
+}
+
+function getRobertImmunizationReply(first: string): string {
+  return `${first}'s immunization record:\n\nUp to date:\n✓ Influenza — 10/2023\n✓ COVID-19 (primary + bivalent booster) — 09/2023\n✓ Tdap — 2021\n\nDue / Recommended:\n• Hepatitis B series — not documented; indicated for adults with diabetes under 60\n• Pneumococcal (PPSV23) — not yet indicated (age 45, no immunocompromising conditions)\n\nRecommend discussing Hepatitis B series at next PCP visit per ADA guidelines.`
+}
+
+function getRobertBehavioralHealthReply(first: string): string {
+  return `${first}'s behavioral health summary:\n\n• Diagnosis: No active behavioral health diagnosis on file\n• Last PHQ-9: Score 5 (minimal) — 01/15/2024\n• PHQ-9 status: Current — within last 6 months ✓\n• No behavioral health medications prescribed\n• No current BH provider involvement\n\nPHQ-9 score 5 — minimal depression symptoms. No BH referral indicated at this time. Re-administer annually or if clinical picture changes.`
+}
+
+function getRobertContactReply(first: string): string {
+  const preferred = robertMemberDetail.phones.find(p => p.isPreferred)
+  const alternate = robertMemberDetail.phones.find(p => !p.isPreferred)
+  return `Contact preferences for ${first}:\n\n• Preferred phone: ${preferred?.phoneNumber ?? 'N/A'}\n• Best time to call: ${preferred?.bestTimeToCall ?? 'N/A'}\n• Alternate phone: ${alternate?.phoneNumber ?? 'N/A'}\n• Preferred written language: ${robertMemberDetail.preferredWrittenLanguages.join(', ')}\n• Communication impairments: None documented\n\nLast successful contact: 02/20/2024 (phone)\nNote: Member works full-time in tech — evenings M-F 5pm–7pm preferred.`
+}
+
+function getRobertEligibilityReply(first: string): string {
+  const primary = robertEligibility.eligibilities.find(e => e.status === 'Active')
+  return `${first}'s coverage details:\n\nPrimary:\n• ${primary?.eligibilityPath ?? 'N/A'}\n• Start: ${fmtDate(primary?.startDate ?? '')} · End: ${fmtDate(primary?.endDate ?? '')}\n• Status: ${primary?.status ?? 'N/A'}\n• Plan Type: Commercial\n\nInsurance: Blue Shield of California — PPO Silver plan. No secondary coverage.\n\nRenewal outreach recommended prior to December 2024 end date.`
+}
+
+function getRobertMemberDetailReply(first: string): string {
+  const addr = robertMemberDetail.addresses.find(a => a.isPreferred)
+  return `${first}'s member details:\n\n• Full name: ${robertMemberDetail.memberFirstName} ${robertMemberDetail.memberMiddleName} ${robertMemberDetail.memberLastName}\n• DOB: ${robertMemberDetail.dateOfBirth} · Gender: ${robertMemberDetail.gender} · Pronouns: ${robertMemberDetail.preferredPronouns}\n• Primary language: ${robertMemberDetail.primaryLanguage}\n• Address: ${addr?.address1 ?? 'N/A'}, ${addr?.city}, ${addr?.state} ${addr?.zip}\n• Assigned care manager: ${robertMemberDetail.assignedCareManager}\n• Status: ${robertMemberDetail.status} · Enrollment: ${robertMemberDetail.enrollment}\n• Ethnicity: ${robertMemberDetail.ethnicity.join(', ')} · Marital status: ${robertMemberDetail.maritalStatus}`
+}
+
+function getRobertRiskReply(first: string): string {
+  return `${first}'s current risk level: Moderate\n\nRisk stratification (2024):\n• Overall risk tier: Tier 2 — Moderate\n• Primary drivers:\n  - Type 2 Diabetes (A1C 7.2% — approaching goal)\n  - Obesity (BMI 31.3)\n  - Obstructive Sleep Apnea (on CPAP — adherence unknown)\n  - Hyperlipidemia (LDL 88 — at goal on statin)\n• 30-day readmission risk: Low\n• 12-month hospitalization risk: Low-Moderate\n• Last risk assessment: HRA score 52/100 (01/2024)\n\nMember is health-literate and engaged. Primary risk is glycemic control and CPAP adherence for sleep apnea. No ER visits or hospitalizations on record.`
+}
+
+function getRobertHealthIndicatorReply(first: string): string {
+  return `${first}'s last recorded health indicators (02/20/2024):\n\nKey clinical values:\n• HbA1c: 7.2% — above goal (<7.0%), improving trend ↓\n• Blood Pressure: 125/78 mmHg ✓ — at goal\n• BMI: 31.3 — obese range, weight management in progress\n• eGFR: 89 mL/min/1.73m² — normal renal function\n• LDL: 88 mg/dL ✓ — at goal on Atorvastatin\n• O₂ Saturation: 96% — adequate, monitor for sleep apnea impact\n\nMost concerning indicator: A1C 7.2% — just above goal. Positive trend from 7.6% (Sep 2023). Continue supporting dietary changes and Metformin adherence. CPAP compliance check recommended.`
+}
+
+function getRobertReply(q: string, first: string): string {
+  if (matches(q, RISK_TERMS))              return getRobertRiskReply(first)
+  if (matches(q, HEALTH_INDICATOR_TERMS))  return getRobertHealthIndicatorReply(first)
+  if (matches(q, ALLERGY_TERMS))           return getRobertAllergyReply(first)
+  if (matches(q, VITAL_TERMS))             return getRobertVitalReply(first)
+  if (matches(q, LAB_TERMS))               return getRobertLabReply(first)
+  if (matches(q, MED_TERMS))               return getRobertMedReply(first)
+  if (matches(q, BEHAVIORAL_HEALTH_TERMS)) return getRobertBehavioralHealthReply(first)
+  if (matches(q, SDOH_TERMS))              return getRobertSdohReply(first)
+  if (matches(q, IMMUNIZATION_TERMS))      return getRobertImmunizationReply(first)
+  if (matches(q, CARE_GAP_TERMS))          return getRobertCareGapReply(first)
+  if (matches(q, ASSESSMENT_TERMS))        return getRobertAssessmentReply(first)
+  if (matches(q, CARE_PLAN_TERMS))         return getRobertCarePlanReply(first)
+  if (matches(q, PROGRAM_TERMS))           return getRobertProgramReply(first)
+  if (matches(q, VISIT_TERMS))             return getRobertVisitReply(first)
+  if (matches(q, ELIGIBILITY_TERMS))       return getRobertEligibilityReply(first)
+  if (matches(q, CONTACT_TERMS))           return getRobertContactReply(first)
+  if (matches(q, DIAGNOSIS_TERMS))         return getRobertDxReply(first)
+  if (matches(q, MEMBER_DETAIL_TERMS))     return getRobertMemberDetailReply(first)
+  return getGeneralFallbackRobert(q, first)
+}
+
+function getGeneralFallbackRobert(q: string, first: string): string {
+  if (/^(hi|hey|hello|good morning|good afternoon|good evening|howdy)\b/.test(q)) {
+    return `Hi there! I'm Haven. I'm currently viewing ${first}'s record — a 45-year-old male in San Francisco with Type 2 Diabetes, Hypertension, and Obstructive Sleep Apnea.\n\nWhat would you like to know?`
+  }
+  if (/^(thanks|thank you|thx|ty|great|perfect|got it|sounds good|ok|okay|cool|awesome|noted)[\s!.]*$/.test(q)) {
+    return `You're welcome! Let me know if there's anything else you'd like to know about ${first}.`
+  }
+  if (matches(q, ['overview', 'summary', 'snapshot', 'give me a rundown', 'catch me up', 'tell me about'])) {
+    return `Robert Chen — member overview:\n\n• Age: 45 · Gender: Male · DOB: 08/15/1978\n• Risk level: Moderate (Tier 2)\n• Primary diagnoses: Type 2 Diabetes, Essential Hypertension, Hyperlipidemia, Obesity, Obstructive Sleep Apnea\n• A1C: 7.2% (Jan 2024, improving) · BP: 125/78 ✓ well-controlled\n• Open care gaps: 2 (Diabetic Eye Exam, Kidney Health Evaluation)\n• Active care plan: 3 goals (Diabetes, Hypertension, Weight Management)\n• Programs: Chronic Disease Management (active), DSME (eligible, not enrolled)\n• Last contact: 02/20/2024\n\nHealth-literate, motivated member. Primary challenge: sedentary work schedule limiting exercise and consistent dietary habits.`
+  }
+  if (matches(q, ['call prep', 'prepare for', 'talking points', 'before i call', 'what to discuss'])) {
+    return `Call prep for Robert Chen:\n\n1. A1C follow-up — last 7.2% (Jan 2024), improving — reinforce dietary changes\n2. CPAP adherence check — sleep apnea diagnosed Nov 2022, CPAP prescribed\n3. Open care gaps: Diabetic Eye Exam and Kidney Health Evaluation (uACR)\n4. Weight management — BMI 31.3, care plan goal to reduce BMI\n5. DSME enrollment opportunity — eligible but not enrolled\n6. Exercise routine check-in — sedentary desk job, goal of lunch-break walks\n\nBest contact window: evenings M-F 5–7pm. Member is health-literate; can handle detailed clinical conversations.`
+  }
+  if (matches(q, ['pcp', 'primary care', 'doctor', 'physician', 'provider', 'who is his doctor'])) {
+    return `Robert's primary care provider:\n\n• PCP: Dr. Kim — UCSF Medical Center\n• Last PCP visit: 02/20/2024\n• Sleep Medicine Specialist: Dr. Nguyen — UCSF Sleep Disorders Center\n\nAll care coordinated through UCSF Medical Center, San Francisco.`
+  }
+  if (matches(q, ['next step', 'next steps', 'recommend', 'action item', 'follow up', 'what now', 'priority'])) {
+    return `Recommended next steps for Robert Chen:\n\n1. Schedule Diabetic Eye Exam (open HEDIS gap)\n2. Order uACR lab for Kidney Health Evaluation (open gap)\n3. Assess CPAP adherence — review compliance data with Dr. Nguyen\n4. Discuss DSME enrollment — eligible and not enrolled\n5. Dietitian referral — meal planning support for sedentary work schedule\n6. Reinforce weight management goal — lunch-break exercise routine`
+  }
+  if (matches(q, ['last contact', 'last call', 'outreach history', 'when did we last'])) {
+    return `Robert's most recent contact history:\n\n• Last successful contact: 02/20/2024 — phone call (evening)\n  Summary: Care plan review, A1C results discussed (7.2%), CPAP check-in\n• Prior contact: 01/15/2024 — phone call\n  Summary: HRA completed, SDOH screening, care plan established\n\nContact preference: M-F 5–7pm evening calls preferred.`
+  }
+  if (matches(q, ['how is he doing', 'how is the member doing', 'member status', 'status update', 'current status'])) {
+    return `Robert Chen — current status summary:\n\n• Overall: Moderate risk, actively managed\n• Diabetes: A1C 7.2% — improving (was 7.6% in Sep 2023), just above 7.0% goal\n• Hypertension: BP 125/78 — well-controlled ✓\n• Sleep Apnea: CPAP prescribed — adherence not confirmed at last contact\n• Weight: BMI 31.3 — obese range, weight management goal active\n• SDOH: Minimal risk — stable housing, strong family support\n\nMember is health-literate and engaged. Primary focus: close remaining HEDIS gaps and confirm CPAP adherence.`
+  }
+  return `I'm not sure I have specific data for that, but here's what I can share about ${first} that might help:\n\n• Risk level: Moderate (Tier 2) — T2DM, Hypertension, Sleep Apnea\n• Most urgent: A1C 7.2% (near goal), open gaps: Diabetic Eye Exam, Kidney Health Eval\n• CPAP adherence unconfirmed at last contact\n• Last contact: 02/20/2024\n\nCould you rephrase your question, or would you like me to pull up a specific section?`
+}
+
+/* ─── Sarah Williams reply functions (AH0000045) ─────────────────────────────── */
+
+function getSarahMedReply(first: string): string {
+  const active = sarahMedications.filter(m => m.isCurrent)
+  const lastRecon = active[0]?.lastReconDate ? fmtDate(active[0].lastReconDate) : 'N/A'
+  const activeLines = active.map(m =>
+    `• ${m.medicationName} ${m.dosage} — ${m.route} ${m.frequency} (${m.diagnosis})`
+  ).join('\n')
+  return `${first}'s medications as of ${lastRecon}:\n\nActive (${active.length}):\n${activeLines}\n\nLast pharmacy reconciliation ${lastRecon}. Please confirm with dispensing pharmacy prior to any clinical decisions.`
+}
+
+function getSarahAllergyReply(first: string): string {
+  return `${first} has the following documented allergies:\n\n• Sulfonamides — Reaction: Rash\n• Codeine — Reaction: Nausea, vomiting\n\nNote: NSAIDs and COX-2 inhibitors should be used with caution or avoided given concurrent CHF and CKD Stage 3. Last allergy review: 03/15/2024.`
+}
+
+function getSarahDxReply(first: string): string {
+  const lines = sarahDiagnosis.map(d =>
+    `• ${d.condition} (${d.diagnosisCode}) — onset ${fmtDate(d.startDate)} · ${d.category} · ${d.level}`
+  ).join('\n')
+  const lastVisit = fmtDate(sarahVisits[0]?.serviceFrom ?? '')
+  return `${first}'s active problem list (${sarahDiagnosis.length} conditions):\n\n${lines}\n\nLast updated at visit on ${lastVisit}.`
+}
+
+function getSarahVitalReply(first: string): string {
+  return `${first}'s most recent vitals (03/15/2024):\n\n• Blood Pressure: 148/92 mmHg — elevated ⚠️\n• Heart Rate: 86 bpm\n• Respiratory Rate: 18 breaths/min\n• Temperature: 98.4°F\n• O₂ Saturation: 95% on room air — borderline ⚠️ (CHF)\n• Weight: 173 lbs | Height: 5'5" | BMI: 28.8\n\nBP above target (<130/80). O₂ saturation borderline — monitor for CHF fluid retention. Weight up 1 lb from discharge — watch for fluid trends.`
+}
+
+function getSarahLabReply(first: string): string {
+  return `${first}'s most recent lab results (02/20/2024 – 03/15/2024):\n\n• HbA1c: 8.6% — above target (goal <8.0%) ⚠️\n• Fasting Glucose: 182 mg/dL — elevated\n• eGFR: 44 mL/min/1.73m² — CKD Stage 3 (moderate) ⚠️\n• Creatinine: 1.5 mg/dL — elevated\n• Potassium: 4.2 mEq/L — within range (Furosemide monitoring)\n• BNP: 380 pg/mL — elevated, CHF activity ⚠️\n• LDL: 72 mg/dL — at goal on Atorvastatin ✓\n\nHbA1c increased from 8.1% (Oct 2023). Metformin dose already reduced due to CKD. Dietitian referral needed. BNP trending down from hospitalization (420 pg/mL in Jan 2024).`
+}
+
+function getSarahCareGapReply(first: string): string {
+  const open = sarahGapsInCare.filter(g => g.opportunityStatus === 'Open')
+  const closed = sarahGapsInCare.filter(g => g.opportunityStatus === 'Closed')
+  const openLines = open.map(g =>
+    `• ${g.opportunity} (${g.measureCode}) — ${g.ncqaGrouping}\n  ${g.measureDescription}`
+  ).join('\n')
+  const closedLines = closed.map(g => `• ${g.opportunity} (${g.measureCode}) — Fulfilled`).join('\n')
+  return `${first} has ${open.length} open care gap${open.length !== 1 ? 's' : ''} for 2024:\n\n${openLines}\n\nClosed / Fulfilled (${closed.length}):\n${closedLines}\n\nClosing open gaps supports HEDIS compliance and improves the member's star rating.`
+}
+
+function getSarahVisitReply(first: string): string {
+  const lines = sarahVisits.map(v =>
+    `• ${fmtDate(v.serviceFrom)} — ${v.visitType}\n  Provider: ${v.providerName}\n  Reason: ${v.reasonForVisit}${v.lengthOfStay ? `\n  Length of stay: ${v.lengthOfStay} day(s)` : ''}`
+  ).join('\n')
+  const erVisits = sarahVisits.filter(v => v.visitType.toLowerCase().includes('emergency') || v.visitType.toLowerCase().includes('er'))
+  const inpatient = sarahVisits.filter(v => v.visitType.toLowerCase().includes('inpatient'))
+  return `${first}'s visit history (${sarahVisits.length} encounters):\n\n${lines}\n\nER visits: ${erVisits.length} | Inpatient stays: ${inpatient.length}`
+}
+
+function getSarahCarePlanReply(first: string): string {
+  const active = sarahCarePlan.filter(c => c.status !== 'Closed')
+  const goalLines = active.map(c =>
+    `• [${c.status}] ${c.goal}\n  Category: ${c.category} · Target: ${fmtDate(c.targetDate)}`
+  ).join('\n')
+  const interventionLines = active.map(c => `• ${c.intervention}`).join('\n')
+  const allBarriers = active.flatMap(c => c.barriers).filter(b => b.status === 'Active')
+  const barrierLines = allBarriers.length
+    ? allBarriers.map(b => `• ${b.barrier} (${b.type})`).join('\n')
+    : '• None documented'
+  return `${first}'s active care plan (${active.length} goals):\n\nGoals:\n${goalLines}\n\nInterventions:\n${interventionLines}\n\nActive barriers:\n${barrierLines}`
+}
+
+function getSarahProgramReply(first: string): string {
+  const active = sarahPrograms.filter(p => p.status === 'Active')
+  const eligible = sarahPrograms.filter(p => p.status.startsWith('Eligible'))
+  const activeLines = active.map(p =>
+    `✓ ${p.program}\n  Enrolled: ${fmtDate(p.startDate)} · ${p.statusDescription}`
+  ).join('\n')
+  const eligibleLines = eligible.map(p => `• ${p.program}\n  ${p.statusDescription}`).join('\n')
+  return `${first}'s program enrollment:\n\nActive (${active.length}):\n${activeLines}\n\nEligible – Not Enrolled (${eligible.length}):\n${eligibleLines}\n\nWould you like to initiate an enrollment referral for any of these?`
+}
+
+function getSarahAssessmentReply(first: string): string {
+  const lines = sarahActivitySummary.map(a =>
+    `• ${a.assessmentName}\n  Status: ${a.assessmentStatus} · Completed: ${fmtDate(a.assessmentCompletedDateTime)}\n  Score: ${a.assessmentScore} · Outcome: ${a.activityOutcome} · Via: ${a.contactType}`
+  ).join('\n')
+  return `${first}'s assessment history (${sarahActivitySummary.length} completed):\n\n${lines}`
+}
+
+function getSarahSdohReply(first: string): string {
+  return `${first}'s social determinants of health screening (03/01/2024):\n\n• Housing: Stable — renting in Atlanta (Fulton County)\n• Food security: ⚠️ At risk — reports difficulty affording low-sodium and low-glycemic foods on fixed income\n• Transportation: Managed — son Marcus provides transportation to all medical appointments\n• Employment: Retired\n• Social support: Limited — divorced, lives alone; son Marcus visits regularly\n\nSDOH score: 4/10 — moderate risk. Primary concerns: food insecurity (dietary compliance barrier for CHF and diabetes) and social isolation since divorce.\n\nCommunity food assistance referral pending. Recommend discussing senior meal programs and telehealth support options.`
+}
+
+function getSarahImmunizationReply(first: string): string {
+  return `${first}'s immunization record:\n\nUp to date:\n✓ COVID-19 (primary + bivalent booster) — 09/2023\n✓ Pneumococcal (PCV15 + PPSV23) — 2022\n✓ Zoster (Shingrix series) — completed 2023\n\nDue / Overdue:\n⚠️ Influenza — open care gap, no flu vaccine for current season\n\nHigh-risk member (CHF, CKD, diabetes, age 62) — flu vaccine is a priority. Recommend scheduling at next encounter.`
+}
+
+function getSarahBehavioralHealthReply(first: string): string {
+  const phq = sarahActivitySummary.find(a => a.assessmentName.toLowerCase().includes('phq'))
+  const bhDx = sarahDiagnosis.find(d => d.category === 'Behavioral Health')
+  const score = phq?.assessmentScore ?? 12
+  const date = phq ? fmtDate(phq.assessmentCompletedDateTime) : '02/20/2024'
+  return `${first}'s behavioral health summary:\n\n• Diagnosis: ${bhDx?.condition ?? 'Major Depressive Disorder'} (${bhDx?.diagnosisCode ?? 'F32.1'})\n• Last PHQ-9: Score ${score} (moderate) — ${date}\n• Current BH medications: Sertraline 100mg (Dr. Evans)\n• Depression follow-up required within 30 days (open care gap)\n\nPHQ-9 score ${score} — moderate depression. Social isolation since divorce is a contributing factor. Member reports feeling lonely and fatigued. Currently stable on Sertraline.\n\nRecommend BH follow-up contact, administer GAD-7, and explore telehealth therapy referral if PHQ-9 remains ≥10.`
+}
+
+function getSarahContactReply(first: string): string {
+  const preferred = sarahMemberDetail.phones.find(p => p.isPreferred)
+  const alternate = sarahMemberDetail.phones.find(p => !p.isPreferred)
+  return `Contact preferences for ${first}:\n\n• Preferred phone: ${preferred?.phoneNumber ?? 'N/A'}\n• Best time to call: ${preferred?.bestTimeToCall ?? 'N/A'}\n• Alternate phone: ${alternate?.phoneNumber ?? 'N/A'}\n• Preferred written language: ${sarahMemberDetail.preferredWrittenLanguages.join(', ')}\n• Communication impairments: None documented\n\nLast successful contact: 03/15/2024 (phone — mid-morning)\nNote: Son Marcus is a key support contact. Mid-morning calls preferred.`
+}
+
+function getSarahEligibilityReply(first: string): string {
+  const primary = sarahEligibility.eligibilities.find(e => e.planType === 'Medicare Advantage')
+  const secondary = sarahEligibility.eligibilities.find(e => e.planType === 'Medicaid DSNP')
+  return `${first}'s coverage details:\n\nPrimary:\n• ${primary?.eligibilityPath ?? 'N/A'}\n• Start: ${fmtDate(primary?.startDate ?? '')} · End: ${fmtDate(primary?.endDate ?? '')}\n• Status: ${primary?.status ?? 'N/A'}\n\nSecondary (Medicaid DSNP):\n• ${secondary?.eligibilityPath ?? 'N/A'}\n• Start: ${fmtDate(secondary?.startDate ?? '')} · End: ${fmtDate(secondary?.endDate ?? '')}\n• Status: ${secondary?.status ?? 'N/A'}\n\n• Medicare ID: ${sarahEligibility.medicareID}\n\nDual-eligible (Medicare Advantage + Medicaid DSNP). Renewal outreach recommended prior to year-end.`
+}
+
+function getSarahMemberDetailReply(first: string): string {
+  const addr = sarahMemberDetail.addresses.find(a => a.isPreferred)
+  return `${first}'s member details:\n\n• Full name: ${sarahMemberDetail.memberFirstName} ${sarahMemberDetail.memberMiddleName} ${sarahMemberDetail.memberLastName}\n• DOB: ${sarahMemberDetail.dateOfBirth} · Gender: ${sarahMemberDetail.gender} · Pronouns: ${sarahMemberDetail.preferredPronouns}\n• Primary language: ${sarahMemberDetail.primaryLanguage}\n• Address: ${addr?.address1 ?? 'N/A'}, ${addr?.city}, ${addr?.state} ${addr?.zip}\n• Assigned care manager: ${sarahMemberDetail.assignedCareManager}\n• Status: ${sarahMemberDetail.status} · Enrollment: ${sarahMemberDetail.enrollment}\n• Ethnicity: ${sarahMemberDetail.ethnicity.join(', ')} · Marital status: ${sarahMemberDetail.maritalStatus}`
+}
+
+function getSarahRiskReply(first: string): string {
+  return `${first}'s current risk level: High\n\nRisk stratification (2024):\n• Overall risk tier: Tier 4 — High\n• Primary drivers:\n  - CHF hospitalization 01/2024 — high 30-day readmission risk\n  - Elevated BNP (380 pg/mL) and borderline O₂ saturation (95%)\n  - Uncontrolled Type 2 Diabetes (A1C 8.6%, above goal)\n  - CKD Stage 3 (eGFR 44)\n  - Major Depressive Disorder (PHQ-9 score 12 — moderate)\n  - Social isolation and food insecurity\n• 30-day CHF readmission risk: High ⚠️\n• 12-month hospitalization risk: High\n• Last risk assessment: HRA score 88/100 (02/2024)\n\nHigh-priority member. CHF readmission prevention is the primary care management focus — monitor daily weight and fluid status closely.`
+}
+
+function getSarahHealthIndicatorReply(first: string): string {
+  return `${first}'s last recorded health indicators (03/15/2024):\n\nKey clinical values:\n• BNP: 380 pg/mL ⚠️ — elevated, post-CHF hospitalization (down from 420 pg/mL)\n• O₂ Saturation: 95% ⚠️ — borderline (CHF); monitor closely\n• Blood Pressure: 148/92 mmHg ⚠️ — above target (<130/80)\n• Weight: 173 lbs — up 1 lb from discharge; monitor for fluid trend\n• HbA1c: 8.6% ⚠️ — above goal (<8.0%)\n• eGFR: 44 mL/min/1.73m² — CKD Stage 3, monitor renal function\n\nMost concerning: BNP still elevated and weight trending up post-hospitalization. Daily weight monitoring is critical — alert care team if +2 lbs/day or +5 lbs/week.`
+}
+
+function getSarahReply(q: string, first: string): string {
+  if (matches(q, RISK_TERMS))              return getSarahRiskReply(first)
+  if (matches(q, HEALTH_INDICATOR_TERMS))  return getSarahHealthIndicatorReply(first)
+  if (matches(q, ALLERGY_TERMS))           return getSarahAllergyReply(first)
+  if (matches(q, VITAL_TERMS))             return getSarahVitalReply(first)
+  if (matches(q, LAB_TERMS))               return getSarahLabReply(first)
+  if (matches(q, MED_TERMS))               return getSarahMedReply(first)
+  if (matches(q, BEHAVIORAL_HEALTH_TERMS)) return getSarahBehavioralHealthReply(first)
+  if (matches(q, SDOH_TERMS))              return getSarahSdohReply(first)
+  if (matches(q, IMMUNIZATION_TERMS))      return getSarahImmunizationReply(first)
+  if (matches(q, CARE_GAP_TERMS))          return getSarahCareGapReply(first)
+  if (matches(q, ASSESSMENT_TERMS))        return getSarahAssessmentReply(first)
+  if (matches(q, CARE_PLAN_TERMS))         return getSarahCarePlanReply(first)
+  if (matches(q, PROGRAM_TERMS))           return getSarahProgramReply(first)
+  if (matches(q, VISIT_TERMS))             return getSarahVisitReply(first)
+  if (matches(q, ELIGIBILITY_TERMS))       return getSarahEligibilityReply(first)
+  if (matches(q, CONTACT_TERMS))           return getSarahContactReply(first)
+  if (matches(q, DIAGNOSIS_TERMS))         return getSarahDxReply(first)
+  if (matches(q, MEMBER_DETAIL_TERMS))     return getSarahMemberDetailReply(first)
+  return getGeneralFallbackSarah(q, first)
+}
+
+function getGeneralFallbackSarah(q: string, first: string): string {
+  if (/^(hi|hey|hello|good morning|good afternoon|good evening|howdy)\b/.test(q)) {
+    return `Hi there! I'm Haven. I'm currently viewing ${first}'s record — a 62-year-old female in Atlanta with CHF, Type 2 Diabetes, CKD Stage 3, and Major Depressive Disorder.\n\nWhat would you like to know?`
+  }
+  if (/^(thanks|thank you|thx|ty|great|perfect|got it|sounds good|ok|okay|cool|awesome|noted)[\s!.]*$/.test(q)) {
+    return `You're welcome! Let me know if there's anything else you'd like to know about ${first}.`
+  }
+  if (matches(q, ['overview', 'summary', 'snapshot', 'give me a rundown', 'catch me up', 'tell me about'])) {
+    return `Sarah Williams — member overview:\n\n• Age: 62 · Gender: Female · DOB: 03/22/1961\n• Risk level: High (Tier 4)\n• Primary diagnoses: CHF (I50.32), Major Depressive Disorder, Type 2 Diabetes, Hypertension, CKD Stage 3, Hyperlipidemia\n• Recent hospitalization: Inpatient 01/22/2024 — CHF exacerbation (3 days)\n• BNP: 380 pg/mL ⚠️ · A1C: 8.6% ⚠️ · O₂ Sat: 95% ⚠️\n• Open care gaps: 4 (flu vaccine, eye exam, depression follow-up, kidney eval)\n• Active programs: Care Coordination, Chronic Disease Management, Behavioral Health Integration\n• Last contact: 03/15/2024\n\nHigh-priority member. Focus: CHF readmission prevention, daily weight monitoring, medication adherence, depression management.`
+  }
+  if (matches(q, ['call prep', 'prepare for', 'talking points', 'before i call', 'what to discuss'])) {
+    return `Call prep for Sarah Williams:\n\n1. ⚠️ Daily weight check — any gain of 2+ lbs/day triggers escalation protocol\n2. Fluid and sodium restriction review — financial barrier to low-sodium diet\n3. Flu vaccine — open care gap, high-risk member\n4. PHQ-9 re-screen — last score 12 (moderate), depression follow-up required\n5. Food assistance connection — community referral pending\n6. Cardiac rehabilitation enrollment opportunity\n7. BNP trend — confirm if any new symptoms (SOB, edema)\n\nBest contact: mid-morning M-F. Son Marcus is a key support contact.`
+  }
+  if (matches(q, ['pcp', 'primary care', 'doctor', 'physician', 'provider', 'who is her doctor'])) {
+    return `Sarah's primary care provider:\n\n• PCP: Dr. Patel — Anthem Medicare Advantage\n• Cardiologist: Dr. Johnson — Atlanta Cardiology Group (last visit 02/08/2024)\n• BH Provider: Dr. Evans (prescribing Sertraline)\n\nMost recent PCP follow-up: 03/15/2024 post-CHF hospitalization.`
+  }
+  if (matches(q, ['next step', 'next steps', 'recommend', 'action item', 'follow up', 'what now', 'priority'])) {
+    return `Recommended next steps for Sarah Williams:\n\n1. ⚠️ Confirm daily weight log — CHF readmission risk\n2. Schedule influenza vaccine (open care gap)\n3. BH follow-up — PHQ-9 score 12, depression follow-up overdue\n4. Connect to food assistance program (pending referral)\n5. Discuss cardiac rehabilitation enrollment\n6. Diabetic eye exam — open HEDIS gap\n7. Kidney health evaluation (uACR) — open HEDIS gap`
+  }
+  if (matches(q, ['last contact', 'last call', 'outreach history', 'when did we last'])) {
+    return `Sarah's most recent contact history:\n\n• Last successful contact: 03/15/2024 — post-discharge follow-up (PCP visit)\n• Prior contact: 03/01/2024 — care manager phone call, SDOH screening\n• Prior contact: 02/20/2024 — HRA and PHQ-9 administered (score 12)\n• Prior contact: 01/25/2024 — post-discharge follow-up (CHF hospitalization 01/22/2024)\n\nContact preference: mid-morning M-F. Son Marcus is primary support.`
+  }
+  if (matches(q, ['how is she doing', 'how is the member doing', 'member status', 'status update', 'current status'])) {
+    return `Sarah Williams — current status summary:\n\n• Overall: High complexity, closely monitored post-CHF hospitalization\n• CHF: BNP 380 pg/mL (improving), weight up 1 lb — continue daily monitoring\n• Diabetes: A1C 8.6% — above goal, food insecurity is a primary barrier\n• CKD: Stage 3 (eGFR 44) — Metformin dose reduced, monitor renal function\n• Mental health: PHQ-9 12 (moderate depression) — social isolation since divorce\n• SDOH: Food insecurity, limited income, lives alone\n\nMember is engaged with son Marcus's support. CHF readmission prevention is the primary priority.`
+  }
+  return `I'm not sure I have specific data for that, but here's what I can share about ${first}:\n\n• Risk level: High (Tier 4) — CHF, T2DM, CKD3, MDD\n• Most urgent: CHF readmission risk (30-day), BNP 380 pg/mL, PHQ-9 score 12\n• Open care gaps: 4 (flu vaccine highest priority)\n• Last contact: 03/15/2024\n\nCould you rephrase your question, or would you like me to pull up a specific section?`
+}
+
+/* ─── James O'Connor reply functions (AH0000052) ─────────────────────────────── */
+
+function getJamesMedReply(first: string): string {
+  const active = jamesMedications.filter(m => m.isCurrent)
+  const lastRecon = active[0]?.lastReconDate ? fmtDate(active[0].lastReconDate) : 'N/A'
+  const activeLines = active.map(m =>
+    `• ${m.medicationName} ${m.dosage} — ${m.route} ${m.frequency} (${m.diagnosis})`
+  ).join('\n')
+  return `${first}'s medications as of ${lastRecon}:\n\nActive (${active.length}):\n${activeLines}\n\nLast pharmacy reconciliation ${lastRecon}. Please confirm with dispensing pharmacy prior to any clinical decisions. Note: Member reports occasional missed Apixaban doses due to complex regimen — review at next contact.`
+}
+
+function getJamesAllergyReply(first: string): string {
+  return `No drug allergies are currently documented for ${first}.\n\nLast allergy review: 02/14/2024. Note: Member is on Apixaban (direct anticoagulant) — verify allergy and drug interaction status before any new prescriptions, especially NSAIDs (risk of GI bleeding).`
+}
+
+function getJamesDxReply(first: string): string {
+  const lines = jamesDiagnosis.map(d =>
+    `• ${d.condition} (${d.diagnosisCode}) — onset ${fmtDate(d.startDate)} · ${d.category} · ${d.level}`
+  ).join('\n')
+  const lastVisit = fmtDate(jamesVisits[0]?.serviceFrom ?? '')
+  return `${first}'s active problem list (${jamesDiagnosis.length} conditions):\n\n${lines}\n\nLast updated at visit on ${lastVisit}.`
+}
+
+function getJamesVitalReply(first: string): string {
+  return `${first}'s most recent vitals (02/14/2024):\n\n• Blood Pressure: 136/82 mmHg — mildly elevated ⚠️\n• Heart Rate: 64 bpm (AFib rhythm, rate-controlled on Metoprolol)\n• Respiratory Rate: 18 breaths/min\n• Temperature: 98.2°F\n• O₂ Saturation: 94% on room air — below goal ⚠️ (COPD; goal ≥95%)\n• Weight: 182 lbs | Height: 5'11" | BMI: 25.4\n\nO₂ saturation 94% — monitor for COPD exacerbation. Heart rate 64 — AFib rate-controlled. BP mildly elevated — confirm Metoprolol and lifestyle adherence.`
+}
+
+function getJamesLabReply(first: string): string {
+  return `${first}'s most recent lab results (01/20/2024 – 02/14/2024):\n\n• HbA1c: 7.5% — at goal threshold (target <7.5%) ✓\n• Fasting Glucose: 128 mg/dL — mildly elevated\n• eGFR: 68 mL/min/1.73m² — Stage G2 CKD, monitor\n• Creatinine: 1.1 mg/dL\n• Potassium: 4.0 mEq/L\n• Spirometry (01/08/2024): FEV1 58% predicted — COPD Gold Stage III\n• PT/INR: N/A (on Apixaban — no INR monitoring required)\n\nA1C at 7.5% — stable at goal. Spirometry FEV1 58% — moderate-severe COPD. No statin on current med list despite cardiovascular risk (open HEDIS gap — SPC).`
+}
+
+function getJamesCareGapReply(first: string): string {
+  const open = jamesGapsInCare.filter(g => g.opportunityStatus === 'Open')
+  const closed = jamesGapsInCare.filter(g => g.opportunityStatus === 'Closed')
+  const openLines = open.map(g =>
+    `• ${g.opportunity} (${g.measureCode}) — ${g.ncqaGrouping}\n  ${g.measureDescription}`
+  ).join('\n')
+  const closedLines = closed.map(g => `• ${g.opportunity} (${g.measureCode}) — Fulfilled`).join('\n')
+  return `${first} has ${open.length} open care gap${open.length !== 1 ? 's' : ''} for 2024:\n\n${openLines}\n\nClosed / Fulfilled (${closed.length}):\n${closedLines}\n\nClosing open gaps supports HEDIS compliance and improves the member's star rating.`
+}
+
+function getJamesVisitReply(first: string): string {
+  const lines = jamesVisits.map(v =>
+    `• ${fmtDate(v.serviceFrom)} — ${v.visitType}\n  Provider: ${v.providerName}\n  Reason: ${v.reasonForVisit}${v.lengthOfStay ? `\n  Length of stay: ${v.lengthOfStay} day(s)` : ''}`
+  ).join('\n')
+  const erVisits = jamesVisits.filter(v => v.visitType.toLowerCase().includes('emergency') || v.visitType.toLowerCase().includes('er'))
+  const inpatient = jamesVisits.filter(v => v.visitType.toLowerCase().includes('inpatient'))
+  return `${first}'s visit history (${jamesVisits.length} encounters):\n\n${lines}\n\nER visits: ${erVisits.length} | Inpatient stays: ${inpatient.length}`
+}
+
+function getJamesCarePlanReply(first: string): string {
+  const active = jamesCarePlan.filter(c => c.status !== 'Closed')
+  const goalLines = active.map(c =>
+    `• [${c.status}] ${c.goal}\n  Category: ${c.category} · Target: ${fmtDate(c.targetDate)}`
+  ).join('\n')
+  const interventionLines = active.map(c => `• ${c.intervention}`).join('\n')
+  const allBarriers = active.flatMap(c => c.barriers).filter(b => b.status === 'Active')
+  const barrierLines = allBarriers.length
+    ? allBarriers.map(b => `• ${b.barrier} (${b.type})`).join('\n')
+    : '• None documented'
+  return `${first}'s active care plan (${active.length} goals):\n\nGoals:\n${goalLines}\n\nInterventions:\n${interventionLines}\n\nActive barriers:\n${barrierLines}`
+}
+
+function getJamesProgramReply(first: string): string {
+  const active = jamesPrograms.filter(p => p.status === 'Active')
+  const eligible = jamesPrograms.filter(p => p.status.startsWith('Eligible'))
+  const activeLines = active.map(p =>
+    `✓ ${p.program}\n  Enrolled: ${fmtDate(p.startDate)} · ${p.statusDescription}`
+  ).join('\n')
+  const eligibleLines = eligible.map(p => `• ${p.program}\n  ${p.statusDescription}`).join('\n')
+  return `${first}'s program enrollment:\n\nActive (${active.length}):\n${activeLines}\n\nEligible – Not Enrolled (${eligible.length}):\n${eligibleLines}\n\nWould you like to initiate an enrollment referral for any of these?`
+}
+
+function getJamesAssessmentReply(first: string): string {
+  const lines = jamesActivitySummary.map(a =>
+    `• ${a.assessmentName}\n  Status: ${a.assessmentStatus} · Completed: ${fmtDate(a.assessmentCompletedDateTime)}\n  Score: ${a.assessmentScore} · Outcome: ${a.activityOutcome} · Via: ${a.contactType}`
+  ).join('\n')
+  return `${first}'s assessment history (${jamesActivitySummary.length} completed):\n\n${lines}`
+}
+
+function getJamesSdohReply(first: string): string {
+  return `${first}'s social determinants of health screening (01/20/2024):\n\n• Housing: Stable — owns home in Boston (Commonwealth Ave)\n• Food security: Adequate — no food insecurity identified\n• Transportation: Managed — wife Patricia drives to all appointments\n• Employment: Retired\n• Social support: Strong — married, wife Patricia is his primary caregiver and medication support\n\nSDOH score: 2/10 — low risk. Primary social need: managing a complex medication regimen with multiple chronic conditions. Patricia's involvement is a key strength.\n\nNo community referrals currently indicated.`
+}
+
+function getJamesImmunizationReply(first: string): string {
+  return `${first}'s immunization record:\n\nUp to date:\n✓ COVID-19 (primary + bivalent booster) — 10/2023\n✓ PPSV23 (Pneumococcal) — 2019\n✓ Zoster (Shingrix series) — completed 2022\n✓ Tdap — 2017\n\nDue / Recommended:\n⚠️ Influenza — open care gap, no flu vaccine for current season\n⚠️ PCV20 (Pneumococcal) — new recommendation for COPD patients post-PPSV23\n\nBoth vaccines are priorities given COPD and age (71). Recommend at next clinical encounter.`
+}
+
+function getJamesBehavioralHealthReply(first: string): string {
+  const phq = jamesActivitySummary.find(a => a.assessmentName.toLowerCase().includes('phq'))
+  const score = phq?.assessmentScore ?? 4
+  const date = phq ? fmtDate(phq.assessmentCompletedDateTime) : '10/15/2023'
+  return `${first}'s behavioral health summary:\n\n• No active behavioral health diagnosis on file\n• Last PHQ-9: Score ${score} (minimal) — ${date}\n• No behavioral health medications prescribed\n• Annual re-screen due (last screen Oct 2023)\n\nPHQ-9 score ${score} — minimal depression symptoms. No BH referral indicated. Re-administer PHQ-9 at next contact (overdue). Member reports overall positive mood — wife Patricia is strong support system.`
+}
+
+function getJamesContactReply(first: string): string {
+  const preferred = jamesMemberDetail.phones.find(p => p.isPreferred)
+  const alternate = jamesMemberDetail.phones.find(p => !p.isPreferred)
+  return `Contact preferences for ${first}:\n\n• Preferred phone: ${preferred?.phoneNumber ?? 'N/A'} (Home)\n• Best time to call: ${preferred?.bestTimeToCall ?? 'N/A'}\n• Alternate phone: ${alternate?.phoneNumber ?? 'N/A'} (Cell)\n• Preferred written language: ${jamesMemberDetail.preferredWrittenLanguages.join(', ')}\n• Communication impairments: None documented\n\nLast successful contact: 02/14/2024 (phone — morning)\nNote: Morning calls preferred M-F 9–11am. Wife Patricia often present during calls.`
+}
+
+function getJamesEligibilityReply(first: string): string {
+  const primary = jamesEligibility.eligibilities.find(e => e.planType === 'Medicare Advantage')
+  const secondary = jamesEligibility.eligibilities.find(e => e.planType === 'Medicaid DSNP')
+  return `${first}'s coverage details:\n\nPrimary:\n• ${primary?.eligibilityPath ?? 'N/A'}\n• Start: ${fmtDate(primary?.startDate ?? '')} · End: ${fmtDate(primary?.endDate ?? '')}\n• Status: ${primary?.status ?? 'N/A'}\n\nSecondary (Medicaid DSNP):\n• ${secondary?.eligibilityPath ?? 'N/A'}\n• Start: ${fmtDate(secondary?.startDate ?? '')} · End: ${fmtDate(secondary?.endDate ?? '')}\n• Status: ${secondary?.status ?? 'N/A'}\n\n• Medicare ID: ${jamesEligibility.medicareID}\n\nDual-eligible (UHC Medicare Advantage + Massachusetts Medicaid DSNP). Renewal outreach recommended prior to year-end.`
+}
+
+function getJamesMemberDetailReply(first: string): string {
+  const addr = jamesMemberDetail.addresses.find(a => a.isPreferred)
+  return `${first}'s member details:\n\n• Full name: ${jamesMemberDetail.memberFirstName} ${jamesMemberDetail.memberMiddleName} ${jamesMemberDetail.memberLastName}\n• DOB: ${jamesMemberDetail.dateOfBirth} · Gender: ${jamesMemberDetail.gender} · Pronouns: ${jamesMemberDetail.preferredPronouns}\n• Primary language: ${jamesMemberDetail.primaryLanguage}\n• Address: ${addr?.address1 ?? 'N/A'}, ${addr?.city}, ${addr?.state} ${addr?.zip}\n• Assigned care manager: ${jamesMemberDetail.assignedCareManager}\n• Status: ${jamesMemberDetail.status} · Enrollment: ${jamesMemberDetail.enrollment}\n• Ethnicity: ${jamesMemberDetail.ethnicity.join(', ')} · Marital status: ${jamesMemberDetail.maritalStatus}`
+}
+
+function getJamesRiskReply(first: string): string {
+  return `${first}'s current risk level: Moderate-High\n\nRisk stratification (2024):\n• Overall risk tier: Tier 3 — Moderate-High\n• Primary drivers:\n  - COPD Gold Stage III (FEV1 58% predicted) — ER visit Aug 2023\n  - Persistent Atrial Fibrillation on anticoagulation (Apixaban adherence concern)\n  - Missed anticoagulant doses increasing stroke risk\n  - Osteoporosis with fall risk (age 71)\n  - Complex 7-drug regimen\n• 30-day readmission risk: Moderate\n• 12-month hospitalization risk: Moderate-High (COPD exacerbation history)\n• Last risk assessment: HRA score 79/100 (01/2024)\n\nPrimary risk: COPD exacerbation and stroke prevention via Apixaban adherence. Wife Patricia is a key mitigating factor.`
+}
+
+function getJamesHealthIndicatorReply(first: string): string {
+  return `${first}'s last recorded health indicators (02/14/2024):\n\nKey clinical values:\n• O₂ Saturation: 94% ⚠️ — below goal (≥95%), COPD-related\n• Blood Pressure: 136/82 mmHg — mildly elevated\n• Heart Rate: 64 bpm — AFib rate-controlled on Metoprolol\n• FEV1: 58% predicted — COPD Gold Stage III (moderate-severe)\n• HbA1c: 7.5% ✓ — at goal threshold\n• eGFR: 68 mL/min/1.73m² — Stage G2 CKD, stable\n\nMost concerning: O₂ saturation 94% and COPD progression to Gold Stage III. Pulmonary rehabilitation enrollment recommended. Apixaban adherence monitoring is critical for stroke prevention.`
+}
+
+function getJamesReply(q: string, first: string): string {
+  if (matches(q, RISK_TERMS))              return getJamesRiskReply(first)
+  if (matches(q, HEALTH_INDICATOR_TERMS))  return getJamesHealthIndicatorReply(first)
+  if (matches(q, ALLERGY_TERMS))           return getJamesAllergyReply(first)
+  if (matches(q, VITAL_TERMS))             return getJamesVitalReply(first)
+  if (matches(q, LAB_TERMS))               return getJamesLabReply(first)
+  if (matches(q, MED_TERMS))               return getJamesMedReply(first)
+  if (matches(q, BEHAVIORAL_HEALTH_TERMS)) return getJamesBehavioralHealthReply(first)
+  if (matches(q, SDOH_TERMS))              return getJamesSdohReply(first)
+  if (matches(q, IMMUNIZATION_TERMS))      return getJamesImmunizationReply(first)
+  if (matches(q, CARE_GAP_TERMS))          return getJamesCareGapReply(first)
+  if (matches(q, ASSESSMENT_TERMS))        return getJamesAssessmentReply(first)
+  if (matches(q, CARE_PLAN_TERMS))         return getJamesCarePlanReply(first)
+  if (matches(q, PROGRAM_TERMS))           return getJamesProgramReply(first)
+  if (matches(q, VISIT_TERMS))             return getJamesVisitReply(first)
+  if (matches(q, ELIGIBILITY_TERMS))       return getJamesEligibilityReply(first)
+  if (matches(q, CONTACT_TERMS))           return getJamesContactReply(first)
+  if (matches(q, DIAGNOSIS_TERMS))         return getJamesDxReply(first)
+  if (matches(q, MEMBER_DETAIL_TERMS))     return getJamesMemberDetailReply(first)
+  return getGeneralFallbackJames(q, first)
+}
+
+function getGeneralFallbackJames(q: string, first: string): string {
+  if (/^(hi|hey|hello|good morning|good afternoon|good evening|howdy)\b/.test(q)) {
+    return `Hi there! I'm Haven. I'm currently viewing ${first}'s record — a 71-year-old male in Boston with COPD, Atrial Fibrillation, Type 2 Diabetes, and Osteoporosis.\n\nWhat would you like to know?`
+  }
+  if (/^(thanks|thank you|thx|ty|great|perfect|got it|sounds good|ok|okay|cool|awesome|noted)[\s!.]*$/.test(q)) {
+    return `You're welcome! Let me know if there's anything else you'd like to know about ${first}.`
+  }
+  if (matches(q, ['overview', 'summary', 'snapshot', 'give me a rundown', 'catch me up', 'tell me about'])) {
+    return `James O'Connor — member overview:\n\n• Age: 71 · Gender: Male · DOB: 11/04/1952\n• Risk level: Moderate-High (Tier 3)\n• Primary diagnoses: COPD (Gold III), Persistent AFib (on Apixaban), T2DM, Hypertension, Osteoporosis, Chronic Low Back Pain\n• O₂ Sat: 94% ⚠️ · A1C: 7.5% ✓ · COPD FEV1: 58%\n• Open care gaps: 5 (flu vaccine, pneumococcal, DEXA, CAT score, statin therapy)\n• Programs: Care Coordination, Chronic Disease Management (active); Pulmonary Rehabilitation and DSME (eligible)\n• Last contact: 02/14/2024\n\nKey concern: Apixaban adherence (missed doses, complex 7-drug regimen). Wife Patricia is primary caregiver and medication support.`
+  }
+  if (matches(q, ['call prep', 'prepare for', 'talking points', 'before i call', 'what to discuss'])) {
+    return `Call prep for James O'Connor:\n\n1. ⚠️ Apixaban adherence — missed doses reported; educate on stroke risk\n2. Inhaler technique — Tiotropium and Fluticasone/Salmeterol daily, Albuterol as needed\n3. O₂ saturation — currently 94%, below 95% goal; check for symptom changes\n4. Open care gaps: flu vaccine, PCV20, DEXA scan, CAT score\n5. Pulmonary rehabilitation enrollment — eligible but not enrolled\n6. Statin therapy discussion — no statin despite AFib, HTN, diabetes (open gap)\n7. PHQ-9 re-screen — overdue (last score 4, Oct 2023)\n\nBest contact: M-F 9–11am. Wife Patricia may be on the call.`
+  }
+  if (matches(q, ['pcp', 'primary care', 'doctor', 'physician', 'provider', 'who is his doctor'])) {
+    return `James's primary care provider:\n\n• PCP: Dr. Sullivan — UnitedHealthcare Medicare Advantage\n• Pulmonologist: Dr. Patel — Boston Pulmonary Associates (last visit 01/08/2024)\n• Cardiologist: Dr. Chen — Boston Cardiology Group (last visit 11/20/2023)\n\nAll specialists are co-managing a complex multi-condition profile.`
+  }
+  if (matches(q, ['next step', 'next steps', 'recommend', 'action item', 'follow up', 'what now', 'priority'])) {
+    return `Recommended next steps for James O'Connor:\n\n1. ⚠️ Apixaban adherence support — medication calendar or blister pack\n2. Flu vaccine and PCV20 — both open care gaps, high-risk COPD patient\n3. Pulmonary rehabilitation enrollment\n4. DEXA scan order — annual monitoring for osteoporosis\n5. CAT score assessment (COPD functional test — overdue)\n6. Statin therapy discussion with Dr. Sullivan (open HEDIS gap)\n7. PHQ-9 re-screen at next contact`
+  }
+  if (matches(q, ['last contact', 'last call', 'outreach history', 'when did we last'])) {
+    return `James's most recent contact history:\n\n• Last successful contact: 02/14/2024 — phone call (morning)\n  Summary: COPD check-in, Apixaban adherence reviewed, care plan goals\n• Prior contact: 01/20/2024 — HRA and SDOH screening completed\n• Prior contact: 01/10/2024 — Care Coordination enrollment phone call\n\nContact preference: M-F 9–11am home phone preferred. Wife Patricia often present.`
+  }
+  if (matches(q, ['how is he doing', 'how is the member doing', 'member status', 'status update', 'current status'])) {
+    return `James O'Connor — current status summary:\n\n• Overall: Moderate-High complexity, COPD and AFib focus\n• COPD: FEV1 58% (Gold Stage III), O₂ sat 94% — below goal; ER visit Aug 2023\n• AFib: Apixaban prescribed; occasional missed doses — stroke risk concern\n• Diabetes: A1C 7.5% — at goal threshold ✓\n• Musculoskeletal: Osteoporosis (on Alendronate) and chronic low back pain\n• Social: Stable — wife Patricia provides strong daily support\n\nPrimary focus: COPD exacerbation prevention, Apixaban adherence for stroke risk, and closing multiple open HEDIS gaps.`
+  }
+  return `I'm not sure I have specific data for that, but here's what I can share about ${first}:\n\n• Risk level: Moderate-High (Tier 3) — COPD Gold III, AFib, T2DM\n• Most urgent: Apixaban adherence, O₂ sat 94%, 5 open care gaps\n• ER visit: Aug 2023 (COPD exacerbation); Inpatient: Dec 2022\n• Last contact: 02/14/2024\n\nCould you rephrase your question, or would you like me to pull up a specific section?`
+}
+
 /* ─── Main export ───────────────────────────────────────────────────────────── */
 
 export function getMockReply(input: string, memberName: string, memberId = 'AH0000007'): string {
@@ -1029,6 +1572,9 @@ export function getMockReply(input: string, memberName: string, memberId = 'AH00
   const first = memberName.split(' ')[0]
 
   if (memberId === 'AH0000023') return getLisaReply(q, first)
+  if (memberId === 'AH0000031') return getRobertReply(q, first)
+  if (memberId === 'AH0000045') return getSarahReply(q, first)
+  if (memberId === 'AH0000052') return getJamesReply(q, first)
 
   // Risk level
   if (matches(q, RISK_TERMS)) return getRiskReply(first)

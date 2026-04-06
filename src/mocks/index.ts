@@ -43,3 +43,21 @@ export type { GapInCare } from './gapsInCare'
 
 export { mockVisits } from './visits'
 export type { Visit } from './visits'
+
+export {
+  robertMemberDetail, robertEligibility, robertMedications, robertDiagnosis,
+  robertCarePlan, robertPrograms, robertGapsInCare, robertVisits,
+  robertActivitySummary, robertAssessmentSubmissions,
+} from './robertChen'
+
+export {
+  sarahMemberDetail, sarahEligibility, sarahMedications, sarahDiagnosis,
+  sarahCarePlan, sarahPrograms, sarahGapsInCare, sarahVisits,
+  sarahActivitySummary, sarahAssessmentSubmissions,
+} from './sarahWilliams'
+
+export {
+  jamesMemberDetail, jamesEligibility, jamesMedications, jamesDiagnosis,
+  jamesCarePlan, jamesPrograms, jamesGapsInCare, jamesVisits,
+  jamesActivitySummary, jamesAssessmentSubmissions,
+} from './jamesOConnor'
