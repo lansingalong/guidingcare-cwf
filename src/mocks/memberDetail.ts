@@ -1,6 +1,6 @@
 /**
  * Mock response for /v2/Member/Detail + /v2/Member/Eligibility
- * Member: Henry Tom Garcia (AH0000007)
+ * Member: Henry Tom Garcia (AH58319473)
  */
 
 export interface Phone {
@@ -103,7 +103,7 @@ export const mockMemberDetail: MemberDetail = {
   preferredPronouns: 'He/him/his',
   preferredContactFormat: 'Phone',
 
-  clientPatientId: 'AH0000007',
+  clientPatientId: 'AH58319473',
   managedCareCode: 'MC-CA-001',
   primaryLineOfBusiness: 'Medicaid',
   secondaryLineOfBusiness: 'Medicare',
@@ -218,7 +218,7 @@ export const mockMemberDetail: MemberDetail = {
     { identifierName: 'TFN',                     identifierValue: '800-555-0147' },
     { identifierName: 'MRN',                     identifierValue: 'MRN-789456' },
     { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-HG-2024-0007' },
-    { identifierName: 'MemberID',                identifierValue: 'AH0000007' },
+    { identifierName: 'MemberID',                identifierValue: 'AH58319473' },
     { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'AMB-CA-2024-HG' },
     { identifierName: 'MBR #',                   identifierValue: '1EG4-TE5-MK72' },
     { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-HG-0007' },

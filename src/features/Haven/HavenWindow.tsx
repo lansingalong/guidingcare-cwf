@@ -48,14 +48,14 @@ const MIN_H = 300
 export function HavenWindow({
   memberName = 'Henry Tom Garcia',
   phone = '909-851-3064',
-  memberId = 'AH000000009',
+  memberId = 'AH58319473',
   pcp = 'Ambetter',
   onSend,
   defaultRight = 24,
   defaultBottom = 118,
   defaultWidth = 500,
   defaultHeight = 657,
-  mockMemberId = 'AH0000007',
+  mockMemberId = 'AH58319473',
   hasData = true,
   switchConfirmation,
   isHome = false,
@@ -81,6 +81,8 @@ export function HavenWindow({
   const cancelledRef = useRef(false)
   // Prevents showing the open-time message more than once per member instance
   const openMsgShownRef = useRef(false)
+  // Saved window state — restored when FAB is re-expanded
+  const savedFabStateRef = useRef<{ winState: WindowState; memberChatOpen: boolean; sukiOpen: boolean } | null>(null)
 
   useEffect(() => {
     setPos({
@@ -273,11 +275,30 @@ export function HavenWindow({
     />
   ) : null
 
+  /* ── FAB minimize / expand ── */
+  const minimizeFab = useCallback(() => {
+    savedFabStateRef.current = { winState, memberChatOpen, sukiOpen }
+    setWinState('closed')
+    setMemberChatOpen(false)
+    setSukiOpen(false)
+    setFabExpanded(false)
+  }, [winState, memberChatOpen, sukiOpen])
+
+  const expandFab = useCallback(() => {
+    if (savedFabStateRef.current) {
+      const { winState: sw, memberChatOpen: sm, sukiOpen: ss } = savedFabStateRef.current
+      setWinState(sw)
+      setMemberChatOpen(sm)
+      setSukiOpen(ss)
+    }
+    setFabExpanded(true)
+  }, [])
+
   // ── FAB — always rendered ──
   const fab = isHome ? null : !fabExpanded ? (
     <button
       className={styles.fabMinimized}
-      onClick={() => setFabExpanded(true)}
+      onClick={expandFab}
       type="button"
       aria-label="Expand"
     >
@@ -287,7 +308,7 @@ export function HavenWindow({
     <div className={styles.fabCard}>
       <button
         className={styles.fabChevronBtn}
-        onClick={() => setFabExpanded(false)}
+        onClick={minimizeFab}
         type="button"
         aria-label="Minimize"
       >

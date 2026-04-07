@@ -13,18 +13,18 @@ interface ChatMsg {
 
 const MOCK_MESSAGES: Record<string, ChatMsg[]> = {
   'jackson-thomas': [
-    { id: '1', from: 'cm', senderName: 'Nicholas F.', text: "Hi Jackson, how have your blood sugar readings been this week? Is there anything I can support you with?", timestamp: '11/28/2025 2:10 PM' },
+    { id: '1', from: 'cm', senderName: 'Beatrice Kanya', text: "Hi Jackson, how have your blood sugar readings been this week? Is there anything I can support you with?", timestamp: '11/28/2025 2:10 PM' },
     { id: '2', from: 'member', text: "They've been around 140 fasting. A bit high.", timestamp: '11/28/2025 2:13 PM' },
-    { id: '3', from: 'cm', senderName: 'Nicholas F.', text: "Thanks for tracking that. Are you remembering to take your metformin every morning?", timestamp: '11/28/2025 2:14 PM' },
+    { id: '3', from: 'cm', senderName: 'Beatrice Kanya', text: "Thanks for tracking that. Are you remembering to take your metformin every morning?", timestamp: '11/28/2025 2:14 PM' },
     { id: '4', from: 'member', text: "Yes, every morning with breakfast.", timestamp: '11/28/2025 2:16 PM' },
-    { id: '5', from: 'cm', senderName: 'Nicholas F.', text: "Great. Let's keep monitoring. Your next check-in is scheduled for next week.", timestamp: '11/28/2025 2:17 PM' },
+    { id: '5', from: 'cm', senderName: 'Beatrice Kanya', text: "Great. Let's keep monitoring. Your next check-in is scheduled for next week.", timestamp: '11/28/2025 2:17 PM' },
   ],
   'maria-rivera': [
-    { id: '1', from: 'cm', senderName: 'Sarah M.', text: "Hi Maria, how are you feeling today? Any shortness of breath?", timestamp: '12/1/2025 10:05 AM' },
+    { id: '1', from: 'cm', senderName: 'Beatrice Kanya', text: "Hi Maria, how are you feeling today? Any shortness of breath?", timestamp: '12/1/2025 10:05 AM' },
     { id: '2', from: 'member', text: "A little more than usual yesterday.", timestamp: '12/1/2025 10:09 AM' },
-    { id: '3', from: 'cm', senderName: 'Sarah M.', text: "I'm sorry to hear that. How many pillows are you using to sleep?", timestamp: '12/1/2025 10:11 AM' },
+    { id: '3', from: 'cm', senderName: 'Beatrice Kanya', text: "I'm sorry to hear that. How many pillows are you using to sleep?", timestamp: '12/1/2025 10:11 AM' },
     { id: '4', from: 'member', text: "About 3 now. It's been harder to sleep flat.", timestamp: '12/1/2025 10:14 AM' },
-    { id: '5', from: 'cm', senderName: 'Sarah M.', text: "Let's schedule a call to discuss this. Have you been weighing yourself daily?", timestamp: '12/1/2025 10:15 AM' },
+    { id: '5', from: 'cm', senderName: 'Beatrice Kanya', text: "Let's schedule a call to discuss this. Have you been weighing yourself daily?", timestamp: '12/1/2025 10:15 AM' },
   ],
 }
 
@@ -37,11 +37,11 @@ const MEMBER_DOBS: Record<string, string> = {
 }
 
 const MEMBER_IDS: Record<string, string> = {
-  'jackson-thomas': 'AH00000007',
-  'maria-rivera': 'AH00000023',
-  'robert-chen': 'AH00000031',
-  'sarah-williams': 'AH00000044',
-  'james-oconnor': 'AH00000057',
+  'jackson-thomas': 'AH58319473',
+  'maria-rivera': 'AH72940158',
+  'robert-chen': 'AH36582091',
+  'sarah-williams': 'AH91427634',
+  'james-oconnor': 'AH60273845',
 }
 
 export interface MemberChatWindowProps {

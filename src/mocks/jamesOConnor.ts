@@ -1,5 +1,5 @@
 /**
- * Mock data for James O'Connor (AH0000052)
+ * Mock data for James O'Connor (AH60273845)
  * All shapes mirror the HealthEdge API response format.
  */
 
@@ -23,7 +23,7 @@ export const jamesMemberDetail: MemberDetail = {
   preferredPronouns: 'He/him/his',
   preferredContactFormat: 'Phone',
 
-  clientPatientId: 'AH0000052',
+  clientPatientId: 'AH60273845',
   managedCareCode: 'MC-MA-052',
   primaryLineOfBusiness: 'Medicare Advantage',
   secondaryLineOfBusiness: 'Medicaid',
@@ -101,7 +101,7 @@ export const jamesMemberDetail: MemberDetail = {
     { identifierName: 'TFN',                     identifierValue: '800-555-0520' },
     { identifierName: 'MRN',                     identifierValue: 'MRN-520881' },
     { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-JO-2024-0052' },
-    { identifierName: 'MemberID',                identifierValue: 'AH0000052' },
+    { identifierName: 'MemberID',                identifierValue: 'AH60273845' },
     { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'UHC-MA-2024-JO' },
     { identifierName: 'MBR #',                   identifierValue: '4JO2-PC7-MA52' },
     { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-JO-0052' },
@@ -114,12 +114,12 @@ export const jamesEligibility: MemberEligibility = {
   memberLastName: "O'Connor",
   gender: 'M',
   memberDOB: '1952-11-04T00:00:00.000Z',
-  clientPatientId: 'AH0000052',
+  clientPatientId: 'AH60273845',
   medicareID: 'MCR-JO-2024-052',
   eligibilities: [
     {
       lobBenID: 1,
-      uniqueEligibilityID: 'eligibility-AH0000052-20240101',
+      uniqueEligibilityID: 'eligibility-AH60273845-20240101',
       eligiblityRecords: [
         { level: 1, code: 'UHC', desc: 'UnitedHealthcare' },
         { level: 2, code: 'MA', desc: 'Massachusetts' },
@@ -137,7 +137,7 @@ export const jamesEligibility: MemberEligibility = {
     },
     {
       lobBenID: 2,
-      uniqueEligibilityID: 'eligibility-AH0000052-MCD-20230101',
+      uniqueEligibilityID: 'eligibility-AH60273845-MCD-20230101',
       eligiblityRecords: [
         { level: 1, code: 'MCD', desc: 'Medicaid' },
         { level: 2, code: 'MA', desc: 'Massachusetts' },

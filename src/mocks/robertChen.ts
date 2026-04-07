@@ -1,5 +1,5 @@
 /**
- * Mock data for Robert James Chen (AH0000031)
+ * Mock data for Robert James Chen (AH36582091)
  * All shapes mirror the HealthEdge API response format.
  */
 
@@ -23,7 +23,7 @@ export const robertMemberDetail: MemberDetail = {
   preferredPronouns: 'He/him/his',
   preferredContactFormat: 'Phone',
 
-  clientPatientId: 'AH0000031',
+  clientPatientId: 'AH36582091',
   managedCareCode: 'MC-CA-031',
   primaryLineOfBusiness: 'Commercial',
   secondaryLineOfBusiness: '',
@@ -105,7 +105,7 @@ export const robertMemberDetail: MemberDetail = {
   additionalIdentifiers: [
     { identifierName: 'SUBSCRIBER_NO',          identifierValue: 'SUB-310456' },
     { identifierName: 'MEDICAID_NO',            identifierValue: 'N/A' },
-    { identifierName: 'MemberID',               identifierValue: 'AH0000031' },
+    { identifierName: 'MemberID',               identifierValue: 'AH36582091' },
     { identifierName: 'MRN',                    identifierValue: 'MRN-310789' },
     { identifierName: 'CARRIER_MEMBER_ID',      identifierValue: 'BSC-CA-2024-RC' },
     { identifierName: 'MEMBER_NAME',            identifierValue: 'Robert James Chen' },
@@ -122,12 +122,12 @@ export const robertEligibility: MemberEligibility = {
   memberLastName: 'Chen',
   gender: 'M',
   memberDOB: '1978-08-15T00:00:00.000Z',
-  clientPatientId: 'AH0000031',
+  clientPatientId: 'AH36582091',
   medicareID: '',
   eligibilities: [
     {
       lobBenID: 1,
-      uniqueEligibilityID: 'eligibility-AH0000031-20240101',
+      uniqueEligibilityID: 'eligibility-AH36582091-20240101',
       eligiblityRecords: [
         { level: 1, code: 'BSC', desc: 'Blue Shield of California' },
         { level: 2, code: 'CA',  desc: 'California' },

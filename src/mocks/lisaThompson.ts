@@ -1,5 +1,5 @@
 /**
- * Mock data for Lisa Thompson (AH0000023)
+ * Mock data for Lisa Thompson (AH72940158)
  * All shapes mirror the HealthEdge API response format.
  */
 
@@ -23,7 +23,7 @@ export const lisaMemberDetail: MemberDetail = {
   preferredPronouns: 'She/her/hers',
   preferredContactFormat: 'Phone',
 
-  clientPatientId: 'AH0000023',
+  clientPatientId: 'AH72940158',
   managedCareCode: 'MC-VA-002',
   primaryLineOfBusiness: 'Medicare Advantage',
   secondaryLineOfBusiness: 'Medicaid',
@@ -106,7 +106,7 @@ export const lisaMemberDetail: MemberDetail = {
     { identifierName: 'TFN',                     identifierValue: '800-555-0223' },
     { identifierName: 'MRN',                     identifierValue: 'MRN-441287' },
     { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-LT-2024-0023' },
-    { identifierName: 'MemberID',                identifierValue: 'AH0000023' },
+    { identifierName: 'MemberID',                identifierValue: 'AH72940158' },
     { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'UHC-VA-2024-LT' },
     { identifierName: 'MBR #',                   identifierValue: '2HT5-RK9-LT23' },
     { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-LT-0023' },
@@ -119,12 +119,12 @@ export const lisaEligibility: MemberEligibility = {
   memberLastName: 'Thompson',
   gender: 'F',
   memberDOB: '1966-03-15T00:00:00.000Z',
-  clientPatientId: 'AH0000023',
+  clientPatientId: 'AH72940158',
   medicareID: 'MCR-LT-2024-023',
   eligibilities: [
     {
       lobBenID: 1,
-      uniqueEligibilityID: 'eligibility-AH0000023-20240101',
+      uniqueEligibilityID: 'eligibility-AH72940158-20240101',
       eligiblityRecords: [
         { level: 1, code: 'UHC', desc: 'UnitedHealthcare' },
         { level: 2, code: 'VA', desc: 'Virginia' },
@@ -142,7 +142,7 @@ export const lisaEligibility: MemberEligibility = {
     },
     {
       lobBenID: 2,
-      uniqueEligibilityID: 'eligibility-AH0000023-MCD-20230101',
+      uniqueEligibilityID: 'eligibility-AH72940158-MCD-20230101',
       eligiblityRecords: [
         { level: 1, code: 'MCD', desc: 'Medicaid' },
         { level: 2, code: 'VA', desc: 'Virginia' },

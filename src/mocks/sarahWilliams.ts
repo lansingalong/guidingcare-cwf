@@ -1,5 +1,5 @@
 /**
- * Mock data for Sarah Williams (AH0000045)
+ * Mock data for Sarah Williams (AH91427634)
  * All shapes mirror the HealthEdge API response format.
  */
 
@@ -23,7 +23,7 @@ export const sarahMemberDetail: MemberDetail = {
   preferredPronouns: 'She/her/hers',
   preferredContactFormat: 'Phone',
 
-  clientPatientId: 'AH0000045',
+  clientPatientId: 'AH91427634',
   managedCareCode: 'MC-GA-045',
   primaryLineOfBusiness: 'Medicare Advantage',
   secondaryLineOfBusiness: 'Medicaid',
@@ -101,7 +101,7 @@ export const sarahMemberDetail: MemberDetail = {
     { identifierName: 'TFN',                     identifierValue: '800-555-0445' },
     { identifierName: 'MRN',                     identifierValue: 'MRN-451620' },
     { identifierName: 'MACRAE_ID',               identifierValue: 'MAC-SW-2024-0045' },
-    { identifierName: 'MemberID',                identifierValue: 'AH0000045' },
+    { identifierName: 'MemberID',                identifierValue: 'AH91427634' },
     { identifierName: 'CARRIER_MEMBER_ID',       identifierValue: 'ANT-GA-2024-SW' },
     { identifierName: 'MBR #',                   identifierValue: '3SW9-MA2-GA45' },
     { identifierName: 'MCO Assigned Member ID',  identifierValue: 'MCO-SW-0045' },
@@ -114,12 +114,12 @@ export const sarahEligibility: MemberEligibility = {
   memberLastName: 'Williams',
   gender: 'F',
   memberDOB: '1961-03-22T00:00:00.000Z',
-  clientPatientId: 'AH0000045',
+  clientPatientId: 'AH91427634',
   medicareID: 'MCR-SW-2024-045',
   eligibilities: [
     {
       lobBenID: 1,
-      uniqueEligibilityID: 'eligibility-AH0000045-20240101',
+      uniqueEligibilityID: 'eligibility-AH91427634-20240101',
       eligiblityRecords: [
         { level: 1, code: 'ANT', desc: 'Anthem' },
         { level: 2, code: 'GA',  desc: 'Georgia' },
@@ -137,7 +137,7 @@ export const sarahEligibility: MemberEligibility = {
     },
     {
       lobBenID: 2,
-      uniqueEligibilityID: 'eligibility-AH0000045-MCD-20230101',
+      uniqueEligibilityID: 'eligibility-AH91427634-MCD-20230101',
       eligiblityRecords: [
         { level: 1, code: 'MCD',  desc: 'Medicaid' },
         { level: 2, code: 'GA',   desc: 'Georgia' },

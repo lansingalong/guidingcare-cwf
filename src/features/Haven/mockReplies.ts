@@ -1058,7 +1058,7 @@ function getLisaReply(q: string, first: string): string {
   return getGeneralFallback(q, first, true)
 }
 
-/* ─── Robert Chen reply functions (AH0000031) ───────────────────────────────── */
+/* ─── Robert Chen reply functions (AH36582091) ───────────────────────────────── */
 
 function getRobertMedReply(first: string): string {
   const active = robertMedications.filter(m => m.isCurrent)
@@ -1224,7 +1224,7 @@ function getGeneralFallbackRobert(q: string, first: string): string {
   return `I'm not sure I have specific data for that, but here's what I can share about ${first} that might help:\n\n• Risk level: Moderate (Tier 2) — T2DM, Hypertension, Sleep Apnea\n• Most urgent: A1C 7.2% (near goal), open gaps: Diabetic Eye Exam, Kidney Health Eval\n• CPAP adherence unconfirmed at last contact\n• Last contact: 02/20/2024\n\nCould you rephrase your question, or would you like me to pull up a specific section?`
 }
 
-/* ─── Sarah Williams reply functions (AH0000045) ─────────────────────────────── */
+/* ─── Sarah Williams reply functions (AH91427634) ─────────────────────────────── */
 
 function getSarahMedReply(first: string): string {
   const active = sarahMedications.filter(m => m.isCurrent)
@@ -1395,7 +1395,7 @@ function getGeneralFallbackSarah(q: string, first: string): string {
   return `I'm not sure I have specific data for that, but here's what I can share about ${first}:\n\n• Risk level: High (Tier 4) — CHF, T2DM, CKD3, MDD\n• Most urgent: CHF readmission risk (30-day), BNP 380 pg/mL, PHQ-9 score 12\n• Open care gaps: 4 (flu vaccine highest priority)\n• Last contact: 03/15/2024\n\nCould you rephrase your question, or would you like me to pull up a specific section?`
 }
 
-/* ─── James O'Connor reply functions (AH0000052) ─────────────────────────────── */
+/* ─── James O'Connor reply functions (AH60273845) ─────────────────────────────── */
 
 function getJamesMedReply(first: string): string {
   const active = jamesMedications.filter(m => m.isCurrent)
@@ -1567,14 +1567,14 @@ function getGeneralFallbackJames(q: string, first: string): string {
 
 /* ─── Main export ───────────────────────────────────────────────────────────── */
 
-export function getMockReply(input: string, memberName: string, memberId = 'AH0000007'): string {
+export function getMockReply(input: string, memberName: string, memberId = 'AH58319473'): string {
   const q = input.toLowerCase()
   const first = memberName.split(' ')[0]
 
-  if (memberId === 'AH0000023') return getLisaReply(q, first)
-  if (memberId === 'AH0000031') return getRobertReply(q, first)
-  if (memberId === 'AH0000045') return getSarahReply(q, first)
-  if (memberId === 'AH0000052') return getJamesReply(q, first)
+  if (memberId === 'AH72940158') return getLisaReply(q, first)
+  if (memberId === 'AH36582091') return getRobertReply(q, first)
+  if (memberId === 'AH91427634') return getSarahReply(q, first)
+  if (memberId === 'AH60273845') return getJamesReply(q, first)
 
   // Risk level
   if (matches(q, RISK_TERMS)) return getRiskReply(first)

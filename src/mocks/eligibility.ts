@@ -1,6 +1,6 @@
 /**
  * Mock response for /v2/Member/Eligibility
- * Member: Henry Tom Garcia (AH0000007)
+ * Member: Henry Tom Garcia (AH58319473)
  * Shape based on the sample JSON in the data requirements sheet.
  *
  * API: /v2/Member/Eligibility
@@ -48,12 +48,12 @@ export const mockEligibility: MemberEligibility = {
   memberLastName: 'Garcia',
   gender: 'M',
   memberDOB: '2001-01-01T00:00:00.000Z',
-  clientPatientId: 'AH0000007',
+  clientPatientId: 'AH58319473',
   medicareID: 'MCR-HG-2024-001',
   eligibilities: [
     {
       lobBenID: 1,
-      uniqueEligibilityID: 'eligibility-AH0000007-20240101',
+      uniqueEligibilityID: 'eligibility-AH58319473-20240101',
       eligiblityRecords: [
         { level: 1, code: 'AMB', desc: 'Ambetter Health' },
         { level: 2, code: 'CA', desc: 'California' },
@@ -71,7 +71,7 @@ export const mockEligibility: MemberEligibility = {
     },
     {
       lobBenID: 2,
-      uniqueEligibilityID: 'eligibility-AH0000007-MCD-20230101',
+      uniqueEligibilityID: 'eligibility-AH58319473-MCD-20230101',
       eligiblityRecords: [
         { level: 1, code: 'MCD', desc: 'Medicaid' },
         { level: 2, code: 'VA', desc: 'Virginia' },

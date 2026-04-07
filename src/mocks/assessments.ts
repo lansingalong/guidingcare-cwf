@@ -1,8 +1,8 @@
 /**
  * Mock responses for:
- *   /v2/ActivitySummary/Script?clientPatientID=AH0000007
+ *   /v2/ActivitySummary/Script?clientPatientID=AH58319473
  *   /v2/Assessment/Submission/{submissionId}
- * Member: Henry Tom Garcia (AH0000007)
+ * Member: Henry Tom Garcia (AH58319473)
  */
 
 export interface ScriptSummary {

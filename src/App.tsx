@@ -7,8 +7,8 @@ import { HavenWindow } from './features/Haven/HavenWindow'
  * Members not listed here have no available clinical data in Haven.
  */
 const MOCK_ID_MAP: Record<string, string> = {
-  'jackson-thomas': 'AH0000007', // Henry Garcia mock profile (Diabetes)
-  'maria-rivera':   'AH0000023', // Lisa Thompson mock profile (CHF)
+  'jackson-thomas': 'AH58319473', // Henry Garcia mock profile (Diabetes)
+  'maria-rivera':   'AH72940158', // Lisa Thompson mock profile (CHF)
 }
 
 interface ActiveMember {

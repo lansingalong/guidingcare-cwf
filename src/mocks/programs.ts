@@ -1,6 +1,6 @@
 /**
  * Mock response for Programs (HealthEdge programs API)
- * Member: Henry Tom Garcia (AH0000007)
+ * Member: Henry Tom Garcia (AH58319473)
  */
 
 export interface ProgramActivity {
