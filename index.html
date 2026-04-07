@@ -3415,10 +3415,12 @@ function cpSubTab(name) {
 // Set default active tab
 cpSubTab('overview');
 
-function openScriptResponseModal() {
+function openScriptResponseModal(assessmentName) {
   // Remove any prior dynamic instance
   var prior = document.getElementById('msriDyn');
   if (prior) prior.remove();
+
+  var scriptName = assessmentName || window._gcSelectedActivity || 'Health Risk Assessment';
 
   // Hardcoded fallback member (Jackson Thomas)
   var FALLBACK_MEMBER = {
@@ -3456,7 +3458,9 @@ function openScriptResponseModal() {
 
   var key = (window._gcGetKey ? window._gcGetKey() : null) || 'jackson-thomas';
   var md = window._gcMemberData || {};
-  var qa = (window._gcHraQA && window._gcHraQA.length > 0) ? window._gcHraQA : FALLBACK_QA;
+  var qa = (window._gcAllAssessmentQA && window._gcAllAssessmentQA[scriptName])
+    ? window._gcAllAssessmentQA[scriptName]
+    : (window._gcHraQA && window._gcHraQA.length > 0) ? window._gcHraQA : FALLBACK_QA;
   var m = md[key] || md['jackson-thomas'] || FALLBACK_MEMBER;
 
   var now = new Date();
@@ -3486,7 +3490,7 @@ function openScriptResponseModal() {
     rowsHtml +=
       '<tr style="background:#fff;">' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;width:24px;"></td>' +
-      '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(window._gcSelectedActivity||'Health Risk Assessment')+'</td>' +
+      '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+scriptName+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(r.q||'')+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(r.option||'')+'</td>' +
       '<td style="padding:5px 9px;border:1px solid #e0e0e0;">'+(r.sub||'')+'</td>' +
@@ -3523,7 +3527,7 @@ function openScriptResponseModal() {
         '<div><strong>SUBSCRIBER_SSN :</strong> '+(m.ssn||'N/A')+'</div>' +
         '<div><strong>Member\'s DOB :</strong> '+dobFmt+'</div>' +
         '<div><strong>Member Name :</strong> '+m.name+'</div>' +
-        '<div><strong>Script Name :</strong> '+(window._gcSelectedActivity||'Health Risk Assessment')+'</div>' +
+        '<div><strong>Script Name :</strong> '+scriptName+'</div>' +
         '<div><strong>Completed By :</strong> '+completedBy+'</div>' +
         '<div><strong>Completed On :</strong> '+ts+'</div>' +
         '<div><strong>Eligibility :</strong> N/A</div>' +
@@ -3565,7 +3569,7 @@ function openScriptResponseModal() {
         '<button style="min-width:22px;height:22px;border:1px solid #ccc;border-radius:2px;background:#fff;font-size:11px;cursor:pointer;">&#x276F;&#x276F;</button>' +
         '<select style="font-size:11px;border:1px solid #ccc;border-radius:2px;padding:1px 4px;margin-left:4px;"><option>25</option></select>' +
         '<span>items per page</span>' +
-        '<span style="margin-left:auto;">1 - 25 of 25 items</span>' +
+        '<span style="margin-left:auto;">1 - '+qa.length+' of '+qa.length+' items</span>' +
       '</div>' +
     '</div>';
 
@@ -3576,6 +3580,122 @@ function openScriptResponseModal() {
     if (e.target === overlay) overlay.remove();
   });
 }
+
+// ── Per-assessment Q&A mock data ──────────────────────────────────────────
+window._gcAllAssessmentQA = {
+  'Health Risk Assessment': [
+    {q:'In general, how would you rate your overall health?', option:'Good', sub:'', score:0},
+    {q:'Compared to one year ago, how would you rate your health in general now?', option:'About the same', sub:'', score:0},
+    {q:'In the past 12 months, have you visited an emergency department?', option:'No', sub:'', score:0},
+    {q:'In the past 12 months, how many times have you been admitted to a hospital overnight or longer?', option:'None', sub:'', score:0},
+    {q:'Do you have a primary care provider (PCP) that you see for routine care?', option:'Yes', sub:'', score:0},
+    {q:'Have you been told by a doctor that you have any of the following conditions? (Select all that apply)', option:'Diabetes or pre-diabetes; High blood pressure', sub:'', score:0},
+    {q:'How many prescription medications do you currently take on a regular basis?', option:'4–6 medications', sub:'', score:0},
+    {q:'Please list any known allergies (medications, food, latex, or environmental). If none, write "None."', option:'None', sub:'', score:0},
+    {q:'How often do you have difficulty remembering to take your medications as prescribed?', option:'Rarely', sub:'', score:0},
+    {q:'Are you currently experiencing any pain or discomfort on most days?', option:'No', sub:'', score:0},
+    {q:'In a typical week, how many days do you engage in at least 30 minutes of moderate physical activity?', option:'1–2 days', sub:'', score:0},
+    {q:'How would you describe your eating habits?', option:'Mostly healthy with occasional processed foods', sub:'', score:0},
+    {q:'On average, how many hours of sleep do you get per night?', option:'7–8 hours', sub:'', score:0},
+    {q:'Do you currently use any tobacco or nicotine products?', option:'Never used', sub:'', score:0},
+    {q:'How often do you have a drink containing alcohol?', option:'Never', sub:'', score:0},
+    {q:'Have you fallen or felt unsteady while walking or standing in the past 12 months?', option:'No falls and no balance concerns', sub:'', score:0},
+    {q:'Do you need help with any of the following activities? (Select all that apply)', option:'I do not need help with any of these', sub:'', score:0},
+    {q:'Do you feel physically and emotionally safe where you currently live?', option:'Yes', sub:'', score:0},
+    {q:'When did you last have an annual wellness visit or physical exam with your doctor?', option:'2026-01-10', sub:'', score:0},
+    {q:'Have you seen a doctor, therapist, or counselor for a mental or behavioral health concern in the past 12 months?', option:'No, and I do not feel I need to', sub:'', score:0},
+    {q:'Over the past 2 weeks, how often have you been bothered by feeling down, depressed, or hopeless?', option:'Not at all', sub:'', score:0},
+    {q:'Over the past 2 weeks, how often have you been bothered by feeling nervous, anxious, or on edge?', option:'Not at all', sub:'', score:0},
+    {q:'How often do you feel isolated, lonely, or that you lack companionship?', option:'Hardly ever', sub:'', score:0},
+    {q:'If you needed help during an illness or emergency, do you have someone you could count on?', option:'Yes', sub:'', score:0},
+    {q:'Within the past 12 months, have you ever worried that your food would run out before you had money to buy more?', option:'Never', sub:'', score:0},
+    {q:'In the past 12 months, has a lack of reliable transportation kept you from medical appointments, meetings, work, or getting things needed for daily living?', option:'No', sub:'', score:0},
+    {q:'Which of the following health goals are most important to you right now? (Select all that apply)', option:'Managing a chronic condition', sub:'', score:0},
+    {q:'Is there anything else you would like your care team to know about your health, your needs, or your goals?', option:'I am focused on keeping my diabetes under control.', sub:'', score:0}
+  ],
+  'Comprehensive Assessment': [
+    {q:'In general, how would you rate your overall health?', option:'Good', sub:'', score:0},
+    {q:'Which chronic conditions are you currently managing? (Select all that apply)', option:'Diabetes or pre-diabetes', sub:'', score:0},
+    {q:'How often do you feel down, depressed, or hopeless?', option:'Not at all', sub:'', score:0},
+    {q:'How would you rate your ability to perform daily activities?', option:'Fully independent', sub:'', score:0},
+    {q:'Do you have reliable housing, food, and transportation?', option:'Yes — all needs are met', sub:'', score:0},
+    {q:'How many prescription medications do you currently take?', option:'4–6', sub:'', score:0},
+    {q:'Have you visited an emergency department or been hospitalized in the past 6 months?', option:'No', sub:'', score:0},
+    {q:'What health goals are most important to you right now? (Select all that apply)', option:'Managing a chronic condition', sub:'', score:0},
+    {q:'Is there anything else you would like your care team to know?', option:'No additional concerns at this time.', sub:'', score:0}
+  ],
+  'Functional Status Assessment': [
+    {q:'How would you rate your ability to perform daily activities (such as bathing, dressing, cooking, and housekeeping)?', option:'Fully independent — no help needed', sub:'', score:0},
+    {q:'Do you need assistance with personal care activities (bathing, dressing, grooming, or toileting)?', option:'No, I manage independently', sub:'', score:0},
+    {q:'How would you describe your mobility?', option:'Fully mobile without assistance', sub:'', score:0},
+    {q:'Have you fallen or nearly fallen in the past 12 months?', option:'No', sub:'', score:0},
+    {q:'Which of the following activities do you need help with? (Select all that apply)', option:'None — I manage all activities independently', sub:'', score:0},
+    {q:'Is there anything else about your physical function or daily activities your care team should know?', option:'Managing well on my own.', sub:'', score:0}
+  ],
+  'Social Determinants of Health (SDOH) Assessment': [
+    {q:'Which of the following best describes your current housing situation?', option:'I have stable, permanent housing', sub:'', score:0},
+    {q:'In the past 12 months, have you worried about running out of food before you had money to buy more?', option:'Never', sub:'', score:0},
+    {q:'Do you have reliable transportation to get to medical appointments and other essential errands?', option:'Yes', sub:'', score:0},
+    {q:'What is your current employment status?', option:'Retired', sub:'', score:0},
+    {q:'Do you feel safe in your home and your neighborhood?', option:'Yes', sub:'', score:0},
+    {q:'Are there other social or financial needs affecting your health that you would like help with?', option:'No additional needs at this time.', sub:'', score:0}
+  ],
+  'Pediatric HRA': [
+    {q:'How old is your child?', option:'6–11 years', sub:'', score:0},
+    {q:"How would you rate your child's overall health?", option:'Excellent', sub:'', score:0},
+    {q:'Does your child have any diagnosed medical conditions? (Select all that apply)', option:'None', sub:'', score:0},
+    {q:'Is your child up to date on recommended vaccinations?', option:'Yes', sub:'', score:0},
+    {q:"How would you describe your child's diet on most days?", option:'Mostly fruits, vegetables, and whole foods', sub:'', score:0},
+    {q:'Does your child receive regular physical activity (at least 60 minutes per day)?', option:'Yes, most days', sub:'', score:0},
+    {q:"Do you have concerns about your child's behavior, mood, or emotional health?", option:'No concerns', sub:'', score:0},
+    {q:"Is there anything else about your child's health you'd like your care team to know?", option:'Child is developing well and meeting all milestones.', sub:'', score:0}
+  ],
+  'Oncology HRA': [
+    {q:'What is your current cancer status?', option:'In remission — under surveillance', sub:'', score:0},
+    {q:'Which of the following treatments are you currently receiving or have recently completed? (Select all that apply)', option:'None currently', sub:'', score:0},
+    {q:'How would you rate your current pain level on most days?', option:'No pain (0)', sub:'', score:0},
+    {q:'Are you experiencing any of the following side effects? (Select all that apply)', option:'No significant side effects', sub:'', score:0},
+    {q:'How is your emotional wellbeing since your diagnosis?', option:'Managing well — feeling positive', sub:'', score:0},
+    {q:'Do you have reliable support from family, friends, or a caregiver during your treatment?', option:'Yes — strong support system', sub:'', score:0},
+    {q:"Do you have any questions or concerns about your treatment plan or prognosis you'd like to discuss?", option:'No current concerns about treatment plan.', sub:'', score:0}
+  ],
+  'Fall Risk Assessment': [
+    {q:'Have you fallen in the past 12 months?', option:'Yes, once', sub:'', score:0},
+    {q:'Were you injured during a fall?', option:'Minor injury (bruise, scrape)', sub:'', score:0},
+    {q:'Do you feel unsteady when standing or walking?', option:'Sometimes', sub:'', score:0},
+    {q:'Do you use any assistive devices? (Select all that apply)', option:'Grab bars at home', sub:'', score:0},
+    {q:'Do you take any medications that cause dizziness or drowsiness?', option:'Yes', sub:'', score:0},
+    {q:'Do you have any of the following conditions? (Select all that apply)', option:'Vision problems; Arthritis or joint pain', sub:'', score:0},
+    {q:'Are there any hazards in your home that could increase your risk of falling (loose rugs, poor lighting, clutter)?', option:'No', sub:'', score:0},
+    {q:'Is there anything else you would like your care team to know about your fall risk?', option:'I occasionally feel lightheaded when getting up quickly.', sub:'', score:0}
+  ],
+  'Fall Risk Prevention': [
+    {q:'Have you made any changes to your home to reduce fall risk in the past 12 months? (Select all that apply)', option:'Installed grab bars in bathroom; Removed loose rugs or clutter', sub:'', score:0},
+    {q:'Do you currently use any assistive devices to help with balance or mobility?', option:'No devices', sub:'', score:0},
+    {q:'Are you currently participating in any balance, strength, or fall prevention exercise programs?', option:'Yes', sub:'', score:0},
+    {q:'Do any of your current medications cause dizziness, drowsiness, or balance problems?', option:'No', sub:'', score:0},
+    {q:'Have you had a vision or hearing exam in the past 12 months?', option:'Yes — both vision and hearing', sub:'', score:0},
+    {q:'What additional fall prevention support would be most helpful for you?', option:'Continue with current fall prevention routine.', sub:'', score:0}
+  ],
+  'Transitions of Care (TOC) 1 Pre-Discharge': [
+    {q:'Do you understand the reason for your hospitalization and your current diagnosis?', option:'Yes, clearly', sub:'', score:0},
+    {q:'Have you received and reviewed your discharge instructions with your care team?', option:'Yes — I understand them', sub:'', score:0},
+    {q:'Do you have a follow-up appointment scheduled with your primary care provider or specialist?', option:'Yes — it is scheduled', sub:'', score:0},
+    {q:'Have any new medications been prescribed during this stay?', option:'No new medications', sub:'', score:0},
+    {q:'Do you have reliable transportation home from the facility?', option:'Yes', sub:'', score:0},
+    {q:'Will you have support at home (caregiver, family member, or home health) when you are discharged?', option:'Yes — family or caregiver', sub:'', score:0},
+    {q:'What concerns do you have about going home that your care team should address before discharge?', option:'Feel well prepared for discharge.', sub:'', score:0}
+  ],
+  'Transitions of Care (TOC) 3 Home Visit': [
+    {q:'How are you feeling since being discharged from the hospital or facility?', option:'Well — recovering as expected', sub:'', score:0},
+    {q:'Have you experienced any of the following symptoms since discharge? (Select all that apply)', option:'None of the above', sub:'', score:0},
+    {q:'Have you attended your scheduled follow-up appointment(s) since discharge?', option:'Yes — attended all appointments', sub:'', score:0},
+    {q:'Are you taking all prescribed medications as directed?', option:'Yes — as prescribed', sub:'', score:0},
+    {q:'Is your home environment safe and suitable for your recovery?', option:'Yes — my home is safe', sub:'', score:0},
+    {q:'Do you have adequate food, supplies, and support to continue your recovery at home?', option:'Yes — all needs are met', sub:'', score:0},
+    {q:'What questions or concerns can your care team help address today?', option:'Recovery is going smoothly.', sub:'', score:0}
+  ]
+};
 
 (function() {
   var homeDash = document.getElementById('home-dashboard');
@@ -3704,7 +3824,7 @@ function openScriptResponseModal() {
         str.style.background = '#E8F5E9';
         str.innerHTML =
           '<td><input type="checkbox" /></td>' +
-          '<td><a href="#" style="color:var(--link);font-size:11px;">' + item.assessment + '</a></td>' +
+          '<td><a href="#" onclick="event.preventDefault();openScriptResponseModal(this.textContent);" style="color:var(--link);font-size:11px;">' + item.assessment + '</a></td>' +
           '<td>' + completedDate + '</td>' +
           '<td>Beatrice Kanya : All Access Admin</td>' +
           '<td>Completed</td>' +
