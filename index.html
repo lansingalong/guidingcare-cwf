@@ -2737,6 +2737,7 @@
             <span class="req-subtab active" data-reqpanel="req-eligibility" style="padding:4px 12px;cursor:pointer;border:1px solid var(--border);border-bottom:2px solid var(--text-primary);font-weight:700;color:var(--text-primary);background:var(--white);">Eligibility Programs</span>
             <span class="req-subtab" data-reqpanel="req-clinical" style="padding:4px 12px;cursor:pointer;color:var(--teal);border:1px solid transparent;font-weight:400;">Clinical Programs</span>
             <span class="req-subtab" data-reqpanel="req-additional" style="padding:4px 12px;cursor:pointer;color:var(--teal);border:1px solid transparent;font-weight:400;">Additional Programs Activity</span>
+            <span class="req-subtab" data-reqpanel="req-wf-checklist" style="padding:4px 12px;cursor:pointer;color:var(--teal);border:1px solid transparent;font-weight:400;">Wellframe Checklist</span>
           </div>
 
           <!-- Sub-panel: Eligibility Programs -->
@@ -2830,6 +2831,29 @@
                     <th>Due Date</th>
                   </tr></thead>
                   <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-panel: Wellframe Checklist -->
+          <div class="req-subpanel" id="req-wf-checklist" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-size:13px;font-weight:700;color:var(--teal);">Member's Wellframe Checklist</div>
+              <button onclick="loadWellframeChecklist()" style="font-size:11px;background:none;border:none;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-icons" style="font-size:13px;">refresh</span> Refresh</button>
+            </div>
+            <div class="gc-table-wrap">
+              <div style="overflow-x:auto;">
+                <table class="gc-table">
+                  <thead><tr>
+                    <th>Assessment</th>
+                    <th>Assigned By</th>
+                    <th>Date Assigned</th>
+                    <th>Status</th>
+                  </tr></thead>
+                  <tbody id="wfChecklistTbody">
+                    <tr id="wfChecklistEmpty"><td colspan="4" style="text-align:center;color:var(--text-muted);padding:16px;">No assessments assigned yet.</td></tr>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -3971,7 +3995,32 @@ window._gcAllAssessmentQA = {
       var target = tab.getAttribute('data-reqpanel');
       var panel = document.getElementById(target);
       if (panel) panel.style.display = '';
+      if (target === 'req-wf-checklist') loadWellframeChecklist();
     });
+  });
+
+  // Wellframe Checklist — reads from localStorage written by gc-cwf-activity
+  window.loadWellframeChecklist = function() {
+    var tbody = document.getElementById('wfChecklistTbody');
+    if (!tbody) return;
+    var items = JSON.parse(localStorage.getItem('wf_member_checklist') || '[]');
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr id="wfChecklistEmpty"><td colspan="4" style="text-align:center;color:var(--text-muted);padding:16px;">No assessments assigned yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(function(item) {
+      return '<tr>' +
+        '<td style="font-weight:600;">' + item.assessment + '</td>' +
+        '<td>' + item.addedBy + '</td>' +
+        '<td style="font-size:11px;">' + item.date + '</td>' +
+        '<td><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:#FFF9C4;color:#F57F17;">' + item.status + '</span></td>' +
+        '</tr>';
+    }).join('');
+  };
+
+  // Auto-refresh checklist when storage changes (e.g. activity added in other tab)
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'wf_member_checklist') loadWellframeChecklist();
   });
 
   // Health tab switching
