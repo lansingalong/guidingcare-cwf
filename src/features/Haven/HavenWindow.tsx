@@ -83,7 +83,7 @@ export function HavenWindow({
   const [historyOpen, setHistoryOpen] = useState(false)
   const [sukiActionsReady, setSukiActionsReady] = useState(false)
 
-  const { getSessionsForMember, saveSession, deleteSession, toggleFavorite } = useChatHistory()
+  const { getSessionsForMember, saveSession, deleteSession, toggleFavorite, clearAllForMember } = useChatHistory()
   const [historyVersion, setHistoryVersion] = useState(0)
   const refreshHistory = () => setHistoryVersion(v => v + 1)
   const historySessions = useMemo(() => getSessionsForMember(memberId), [getSessionsForMember, memberId, historyVersion]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -314,6 +314,7 @@ export function HavenWindow({
       memberKey={memberId}
       onClose={() => setMemberChatOpen(false)}
       havenBottomY={havenBottomY}
+      zIndex={sukiOpen ? 800 : undefined}
     />
   ) : null
 
@@ -382,9 +383,12 @@ export function HavenWindow({
   }
 
   const isMinimized = winState === 'minimized'
-  const windowStyle: React.CSSProperties = posReady
-    ? { left: pos.left, top: pos.top, width: size.w, height: isMinimized ? 28 : size.h }
-    : { right: defaultRight, bottom: defaultBottom, width: size.w, height: isMinimized ? 28 : size.h }
+  const windowStyle: React.CSSProperties = {
+    ...(posReady
+      ? { left: pos.left, top: pos.top, width: size.w, height: isMinimized ? 28 : size.h }
+      : { right: defaultRight, bottom: defaultBottom, width: size.w, height: isMinimized ? 28 : size.h }),
+    ...(sukiOpen ? { zIndex: 800 } : {}),
+  }
 
   const hasMessages = messages.length > 0 || loading
 
@@ -465,7 +469,6 @@ export function HavenWindow({
                   onActivityAdded={handleActivityAdded}
                   onNavigate={(dest) => {
                     postToIframe({ type: dest === 'activities' ? 'HAVEN_NAVIGATE_OUTSTANDING' : 'HAVEN_NAVIGATE_CARE_PLAN' })
-                    setWinState('minimized')
                   }}
                 />
               )}
@@ -518,6 +521,8 @@ export function HavenWindow({
               }}
               onDelete={(id) => { deleteSession(id); refreshHistory() }}
               onToggleFavorite={(id) => { toggleFavorite(id); refreshHistory() }}
+              onClearHistory={() => { clearAllForMember(memberId); refreshHistory() }}
+              onLearnMore={handleLearnMore}
             />
           )}
         </div>

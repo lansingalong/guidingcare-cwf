@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Icon } from '@/components/Icons'
 import type { ChatSession } from './useChatHistory'
 import type { Message } from './ChatMessages'
+import { SettingsPanel } from './SettingsPanel'
+import { useHavenSettings } from './useHavenSettings'
 import styles from './ChatHistoryDrawer.module.css'
 
 interface ChatHistoryDrawerProps {
@@ -11,6 +13,8 @@ interface ChatHistoryDrawerProps {
   onNewConversation: () => void
   onDelete: (id: string) => void
   onToggleFavorite: (id: string) => void
+  onClearHistory: () => void
+  onLearnMore?: () => void
 }
 
 function SessionItem({ session, onSelect, onDelete, onToggleFavorite }: {
@@ -77,41 +81,66 @@ function SessionItem({ session, onSelect, onDelete, onToggleFavorite }: {
   )
 }
 
-export function ChatHistoryDrawer({ sessions, onClose, onSelectSession, onNewConversation, onDelete, onToggleFavorite }: ChatHistoryDrawerProps) {
+export function ChatHistoryDrawer({ sessions, onClose, onSelectSession, onNewConversation, onDelete, onToggleFavorite, onClearHistory, onLearnMore }: ChatHistoryDrawerProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const { settings, updateSettings } = useHavenSettings()
+
+  const handleLearnMore = () => {
+    onClose()
+    onLearnMore?.()
+  }
+
   return (
     <div className={styles.root}>
       <div className={styles.sidebar}>
-        <button className={styles.closeBtn} onClick={onClose} type="button" aria-label="Close sidebar">
-          <Icon name="Close" size="md" color="action" />
-        </button>
+        {settingsOpen ? (
+          <SettingsPanel
+            settings={settings}
+            onUpdate={updateSettings}
+            onBack={() => setSettingsOpen(false)}
+            onClearHistory={() => { onClearHistory(); setSettingsOpen(false) }}
+            sessionCount={sessions.length}
+            onLearnMore={handleLearnMore}
+          />
+        ) : (
+          <>
+            <button className={styles.closeBtn} onClick={onClose} type="button" aria-label="Close sidebar">
+              <Icon name="Close" size="md" color="action" />
+            </button>
 
-        <button
-          className={styles.newChatBtn}
-          onClick={() => { onNewConversation(); onClose() }}
-          type="button"
-        >
-          <span className={styles.newChatIcon}>
-            <Icon name="Add" size="sm" color="inverse" />
-          </span>
-          <span className={styles.newChatLabel}>New Chat</span>
-        </button>
+            <button
+              className={styles.newChatBtn}
+              onClick={() => { onNewConversation(); onClose() }}
+              type="button"
+            >
+              <span className={styles.newChatIcon}>
+                <Icon name="Add" size="sm" color="inverse" />
+              </span>
+              <span className={styles.newChatLabel}>New Chat</span>
+            </button>
 
-        <div className={styles.list}>
-          {sessions.map(session => (
-            <SessionItem
-              key={session.id}
-              session={session}
-              onSelect={() => { onSelectSession(session.messages); onClose() }}
-              onDelete={() => onDelete(session.id)}
-              onToggleFavorite={() => onToggleFavorite(session.id)}
-            />
-          ))}
-        </div>
+            <div className={styles.list}>
+              {sessions.map(session => (
+                <SessionItem
+                  key={session.id}
+                  session={session}
+                  onSelect={() => { onSelectSession(session.messages); onClose() }}
+                  onDelete={() => onDelete(session.id)}
+                  onToggleFavorite={() => onToggleFavorite(session.id)}
+                />
+              ))}
+            </div>
 
-        <button className={styles.settingsBtn} type="button">
-          <Icon name="Settings" size="sm" color="action" />
-          <span className={styles.settingsLabel}>Settings</span>
-        </button>
+            <button
+              className={styles.settingsBtn}
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <Icon name="Settings" size="sm" color="action" />
+              <span className={styles.settingsLabel}>Settings</span>
+            </button>
+          </>
+        )}
       </div>
 
       <div className={styles.overlay} onClick={onClose} aria-hidden="true" />

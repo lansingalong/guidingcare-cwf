@@ -40,7 +40,7 @@ const ACTIONS: {
     label: 'Add Improve Knowledge and Skills in Managing Diabetes an opportunity',
     processingLabel: 'Creating education opportunity...',
     destination: 'care-plan',
-    destinationLabel: 'Care Plan Overview',
+    destinationLabel: 'Care Plan',
     activity: {
       title: 'Add Activity',
       activityType: 'Education Session',
@@ -103,10 +103,12 @@ export function RecommendedActionsCard({
   }
   const allAiSelected = aiSelected.size === ACTIONS.length
   const someAiSelected = aiSelected.size > 0
+  const someSelectedNotDone = Array.from(aiSelected).some(i => autoStatus[i] !== 'done')
+  const allDone = ACTIONS.length > 0 && ACTIONS.every((_, i) => autoStatus[i] === 'done')
 
   const runAutomation = async () => {
     setIsAutomating(true)
-    const selected = Array.from(aiSelected)
+    const selected = Array.from(aiSelected).filter(i => autoStatus[i] !== 'done')
     for (const i of selected) {
       setAutoStatus(prev => ({ ...prev, [i]: 'processing' }))
       await new Promise<void>(resolve => setTimeout(resolve, 1800))
@@ -152,20 +154,10 @@ export function RecommendedActionsCard({
                       <button
                         className={`${styles.taskLinkBtn} ${isDone ? styles.taskLinkBtnDone : ''}`}
                         type="button"
-                        onClick={() => !isDone && setOpenModal(i)}
-                        disabled={isDone}
+                        onClick={() => isDone ? onNavigate?.(ACTIONS[i].destination) : setOpenModal(i)}
                       >
                         {label}
                       </button>
-                      {isDone && (
-                        <button
-                          className={styles.viewInLink}
-                          type="button"
-                          onClick={() => onNavigate?.(ACTIONS[i].destination)}
-                        >
-                          View in {ACTIONS[i].destinationLabel} →
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -200,11 +192,6 @@ export function RecommendedActionsCard({
           <span className={styles.title}>Review Recommended Actions</span>
         </div>
         <div className={styles.headerRight}>
-          {mode === 'manual' && !allAdded && (
-            <button className={styles.addAllBtn} type="button" onClick={addAll}>
-              Add all to list
-            </button>
-          )}
           {mode === 'manual' && allAdded && (
             <span className={styles.allDone}>
               <Icon name="PlaylistAddCheck" size="xs" color="primary" />
@@ -243,7 +230,6 @@ export function RecommendedActionsCard({
           type="button"
           onClick={() => setMode('ai')}
         >
-          <Icon name="AutoAwesome" size="xs" color="inherit" />
           Version 2
         </button>
       </div>
@@ -251,6 +237,13 @@ export function RecommendedActionsCard({
       {/* Manual cards */}
       {mode === 'manual' && (
         <>
+          {!allAdded && (
+            <div className={styles.addAllRow}>
+              <button className={styles.addAllBtn} type="button" onClick={addAll}>
+                Add all to list
+              </button>
+            </div>
+          )}
           <div className={styles.cards}>
             {ACTIONS.map(({ label }, i) => {
               const isAdded = added.has(i)
@@ -268,7 +261,7 @@ export function RecommendedActionsCard({
                     }
                   </span>
                   <span className={styles.actionText}>{label}</span>
-                  {isAdded && <span className={styles.addedTag}>Added to list</span>}
+                  {isAdded && <span className={styles.addedTag}>✓ Added</span>}
                 </button>
               )
             })}
@@ -286,7 +279,7 @@ export function RecommendedActionsCard({
       {/* AI cards */}
       {mode === 'ai' && (
         <>
-          {automationDone && (
+          {allDone && (
             <div className={styles.automationSuccess}>
               <Icon name="CheckCircle" size="sm" color="success" />
               <span>All actions completed by AI</span>
@@ -304,8 +297,8 @@ export function RecommendedActionsCard({
                   <button
                     className={`${styles.actionCard} ${isSelected ? styles.actionCardSelected : ''} ${isDone ? styles.actionCardAiDone : ''}`}
                     type="button"
-                    onClick={() => toggleAi(i)}
-                    disabled={isAutomating || isDone}
+                    onClick={() => isDone ? onNavigate?.(destination) : toggleAi(i)}
+                    disabled={isAutomating && !isDone}
                   >
                     <span className={styles.addIcon}>
                       {isDone
@@ -317,26 +310,17 @@ export function RecommendedActionsCard({
                             : <Icon name="CheckBoxOutlineBlank" size="md" color="action" />
                       }
                     </span>
-                    <span className={styles.actionText}>
+                    <span className={`${styles.actionText} ${isDone ? styles.actionTextDone : ''}`}>
                       {isProcessing ? processingLabel : label}
                     </span>
                     {isDone && <span className={styles.doneTag}>Completed</span>}
                   </button>
-                  {isDone && (
-                    <button
-                      className={styles.viewInLinkBelow}
-                      type="button"
-                      onClick={() => onNavigate?.(destination)}
-                    >
-                      View in {destinationLabel} →
-                    </button>
-                  )}
                 </Fragment>
               )
             })}
           </div>
 
-          {someAiSelected && !isAutomating && !automationDone && (
+          {someAiSelected && !isAutomating && someSelectedNotDone && (
             <button className={styles.automateBtn} type="button" onClick={runAutomation}>
               <Icon name="AutoAwesome" size="sm" color="inherit" />
               Automate {aiSelected.size === ACTIONS.length ? 'All' : `${aiSelected.size} Selected`}

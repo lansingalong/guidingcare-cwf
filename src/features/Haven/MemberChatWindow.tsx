@@ -51,6 +51,8 @@ export interface MemberChatWindowProps {
   onClose: () => void
   /** Bottom edge of the Haven window (px from viewport top) — aligns this window's bottom to match */
   havenBottomY?: number
+  /** Override z-index (e.g. lower when a modal overlay is open) */
+  zIndex?: number
 }
 
 const DEFAULT_WIDTH = 440
@@ -61,7 +63,7 @@ const MIN_H = 300
 
 type ResizeDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 
-export function MemberChatWindow({ memberName, memberKey, onClose, havenBottomY }: MemberChatWindowProps) {
+export function MemberChatWindow({ memberName, memberKey, onClose, havenBottomY, zIndex }: MemberChatWindowProps) {
   const dob = MEMBER_DOBS[memberKey] ?? '—'
   const displayId = MEMBER_IDS[memberKey] ?? memberKey
   const initialMsgs = MOCK_MESSAGES[memberKey] ?? []
@@ -148,9 +150,12 @@ export function MemberChatWindow({ memberName, memberKey, onClose, havenBottomY 
     if (e.key === 'Enter') handleSend()
   }
 
-  const windowStyle: React.CSSProperties = posReady
-    ? { left: pos.left, top: pos.top, width: size.w, height: size.h }
-    : { right: DEFAULT_RIGHT, bottom: 24, width: size.w, height: size.h }
+  const windowStyle: React.CSSProperties = {
+    ...(posReady
+      ? { left: pos.left, top: pos.top, width: size.w, height: size.h }
+      : { right: DEFAULT_RIGHT, bottom: 24, width: size.w, height: size.h }),
+    ...(zIndex !== undefined ? { zIndex } : {}),
+  }
 
   return (
     <div className={styles.window} style={windowStyle} role="dialog" aria-label={`Chat with ${memberName}`}>

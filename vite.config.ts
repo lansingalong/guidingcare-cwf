@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: '/gc-haven-rev2/',
+  base: '/gc-haven/r2/',
   plugins: [react()],
   resolve: {
     alias: {

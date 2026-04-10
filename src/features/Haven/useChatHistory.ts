@@ -302,5 +302,9 @@ export function useChatHistory() {
     persistHistory(loadHistory().map(s => s.id === id ? { ...s, favorited: !s.favorited } : s))
   }, [])
 
-  return { getSessionsForMember, saveSession, deleteSession, toggleFavorite }
+  const clearAllForMember = useCallback((memberKey: string) => {
+    persistHistory(loadHistory().filter(s => s.memberKey !== memberKey))
+  }, [])
+
+  return { getSessionsForMember, saveSession, deleteSession, toggleFavorite, clearAllForMember }
 }
